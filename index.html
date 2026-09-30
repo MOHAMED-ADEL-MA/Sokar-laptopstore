@@ -1,0 +1,1324 @@
+<!doctype html>
+<!--
+  ═══════════════════════════════════════════════════════════════
+  متجر الواتساب — كتالوج منتجات بطلب مباشر عبر واتساب
+  البيانات بتتقري من Google Sheets — شوف ملف "خطوات-التشغيل.txt"
+  لخطوات الربط والنشر خطوة بخطوة.
+  ═══════════════════════════════════════════════════════════════
+-->
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>متجري — اطلب عبر واتساب</title>
+    <meta
+      name="description"
+      content="كتالوج منتجاتنا — تصفح واطلب مباشرة عبر واتساب"
+    />
+    <meta name="theme-color" content="#0f766e" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%231eaa57'/%3E%3Ctext x='50' y='70' font-size='54' text-anchor='middle' fill='white' font-family='Arial'%3E%D9%85%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f6f5f2;
+        --card: #ffffff;
+        --ink: #1c1917;
+        --muted: #7c7570;
+        --accent: #0f766e;
+        --accent-dark: #0b5d57;
+        --wa: #1eaa57;
+        --wa-dark: #189a4c;
+        --line: #e8e4de;
+        --radius: 16px;
+        --shadow:
+          0 1px 2px rgba(28, 25, 23, 0.05),
+          0 10px 28px -14px rgba(28, 25, 23, 0.18);
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: "Cairo", "Segoe UI", Tahoma, system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        line-height: 1.6;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      input,
+      button {
+        font-family: inherit;
+      }
+      .hidden {
+        display: none !important;
+      }
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      /* ── الهيدر ─────────────────────────────── */
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--line);
+      }
+      .topbar-inner {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 10px 16px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+      .avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, #0f766e, #14b8a6);
+        color: #fff;
+        font-weight: 800;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .brand-text {
+        min-width: 0;
+      }
+      .brand-name {
+        font-weight: 800;
+        font-size: 17px;
+        line-height: 1.25;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .brand-tagline {
+        font-size: 11.5px;
+        color: var(--muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .search-wrap {
+        position: relative;
+        flex: 1;
+        min-width: 200px;
+      }
+      .search-wrap svg {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        inset-inline-start: 12px;
+        width: 15px;
+        height: 15px;
+        color: var(--muted);
+        pointer-events: none;
+      }
+      #searchInput {
+        width: 100%;
+        padding: 9px 14px;
+        padding-inline-start: 36px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #fff;
+        font: inherit;
+        font-size: 14px;
+        color: var(--ink);
+        outline: none;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
+      }
+      #searchInput:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+      }
+      #searchInput::placeholder {
+        color: #a8a29e;
+      }
+
+      /* ── رسائل التنبيه ──────────────────────── */
+      #banners {
+        max-width: 1080px;
+        margin: 0 auto;
+        width: 100%;
+        padding: 12px 16px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .banner {
+        position: relative;
+        padding: 10px 14px;
+        padding-inline-end: 36px;
+        border-radius: 12px;
+        font-size: 13.5px;
+        line-height: 1.7;
+        border: 1px solid transparent;
+      }
+      .banner-demo {
+        background: #fef8e7;
+        border-color: #f2dfa5;
+        color: #8a6116;
+      }
+      .banner-error {
+        background: #fdecec;
+        border-color: #f5c6c6;
+        color: #9b2c2c;
+      }
+      .banner-warn {
+        background: #fff4e5;
+        border-color: #ffd9a8;
+        color: #9a5b13;
+      }
+      .banner-x {
+        position: absolute;
+        top: 6px;
+        inset-inline-end: 8px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: inherit;
+        font-size: 18px;
+        line-height: 1;
+        opacity: 0.55;
+        padding: 2px 4px;
+      }
+      .banner-x:hover {
+        opacity: 1;
+      }
+
+      /* ── فئات المنتجات ──────────────────────── */
+      .chips-wrap {
+        max-width: 1080px;
+        margin: 0 auto;
+        width: 100%;
+        padding: 10px 16px 4px;
+      }
+      .chips {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 6px;
+        scrollbar-width: none;
+      }
+      .chips::-webkit-scrollbar {
+        display: none;
+      }
+      .chip {
+        flex-shrink: 0;
+        padding: 6px 14px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: #fff;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        color: #57534e;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .chip:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .chip.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      .chip .count {
+        font-size: 11px;
+        opacity: 0.7;
+        font-weight: 600;
+        margin-inline-start: 4px;
+      }
+
+      /* ── شبكة المنتجات ──────────────────────── */
+      main {
+        flex: 1;
+        width: 100%;
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 10px 16px 96px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
+        gap: 14px;
+      }
+      @media (min-width: 640px) {
+        .grid {
+          grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+          gap: 18px;
+        }
+      }
+      .status {
+        padding: 70px 20px;
+        text-align: center;
+        color: var(--muted);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+      }
+      .spinner {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        border: 3px solid var(--line);
+        border-top-color: var(--accent);
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .reset-btn {
+        padding: 7px 20px;
+        border-radius: 999px;
+        border: 1px solid var(--accent);
+        background: #fff;
+        color: var(--accent);
+        font: inherit;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .reset-btn:hover {
+        background: var(--accent);
+        color: #fff;
+      }
+
+      /* ── بطاقة المنتج ───────────────────────── */
+      .card {
+        background: var(--card);
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        transition:
+          transform 0.18s ease,
+          box-shadow 0.18s ease;
+      }
+      .card:hover {
+        transform: translateY(-4px);
+        box-shadow:
+          0 2px 4px rgba(28, 25, 23, 0.06),
+          0 16px 36px -14px rgba(28, 25, 23, 0.25);
+      }
+      .thumb {
+        position: relative;
+        aspect-ratio: 1/1;
+        overflow: hidden;
+        background: #eee9e2;
+      }
+      .ph {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 46px;
+        font-weight: 800;
+        color: rgba(255, 255, 255, 0.92);
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+      }
+      .thumb img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .cat-tag {
+        position: absolute;
+        top: 8px;
+        inset-inline-start: 8px;
+        z-index: 2;
+        background: rgba(255, 255, 255, 0.92);
+        color: #57534e;
+        font-size: 10.5px;
+        font-weight: 700;
+        padding: 2px 9px;
+        border-radius: 999px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+      }
+      .soldout {
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        background: rgba(250, 250, 250, 0.72);
+        backdrop-filter: blur(2px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        color: #57534e;
+        font-size: 14px;
+      }
+      .card-body {
+        padding: 10px 12px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        flex: 1;
+      }
+      .p-name {
+        font-weight: 700;
+        font-size: 14.5px;
+        line-height: 1.4;
+      }
+      .p-desc {
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.55;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .p-price {
+        font-weight: 800;
+        font-size: 16.5px;
+        color: var(--accent-dark);
+        margin-top: 2px;
+      }
+      .p-price .cur {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: var(--muted);
+      }
+      .p-price .ask {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--muted);
+      }
+      .order-btn {
+        margin-top: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        background: var(--wa);
+        color: #fff;
+        border: none;
+        border-radius: 11px;
+        padding: 9px 10px;
+        font: inherit;
+        font-size: 13.5px;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background 0.15s;
+      }
+      .order-btn:hover {
+        background: var(--wa-dark);
+      }
+      .order-btn svg {
+        width: 15px;
+        height: 15px;
+        fill: currentColor;
+        flex-shrink: 0;
+      }
+      .order-btn.disabled {
+        background: #d6d3d1;
+        cursor: not-allowed;
+      }
+
+      /* ── الفوتر والزر العائم ────────────────── */
+      .footer {
+        border-top: 1px solid var(--line);
+        background: #fff;
+        padding: 18px 16px 96px;
+        text-align: center;
+      }
+      .footer-name {
+        font-weight: 800;
+        font-size: 15px;
+      }
+      .footer-note {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .fab {
+        position: fixed;
+        bottom: 18px;
+        left: 18px;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: var(--wa);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 12px 30px rgba(30, 170, 87, 0.45);
+        z-index: 70;
+        transition:
+          transform 0.15s,
+          background 0.15s;
+      }
+      .fab:hover {
+        transform: scale(1.07);
+      }
+      .fab svg {
+        width: 28px;
+        height: 28px;
+        fill: #fff;
+      }
+      .fab.disabled {
+        background: #a8a29e;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+        cursor: not-allowed;
+      }
+      .fab.disabled:hover {
+        transform: none;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <div class="avatar" id="brandAvatar">م</div>
+          <div class="brand-text">
+            <div class="brand-name" id="brandName">متجري</div>
+            <div class="brand-tagline" id="brandTagline">
+              تصفح واطلب عبر واتساب
+            </div>
+          </div>
+        </div>
+        <div class="search-wrap">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <circle cx="11" cy="11" r="7"></circle>
+            <line x1="16.5" y1="16.5" x2="21" y2="21"></line>
+          </svg>
+          <input
+            id="searchInput"
+            type="search"
+            placeholder="ابحث عن منتج..."
+            autocomplete="off"
+          />
+        </div>
+      </div>
+    </header>
+
+    <div id="banners"></div>
+
+    <nav class="chips-wrap" aria-label="فئات المنتجات">
+      <div class="chips" id="chips"></div>
+    </nav>
+
+    <main>
+      <div id="status" class="status hidden">
+        <div class="spinner"></div>
+        <p id="statusText">جاري تحميل المنتجات...</p>
+      </div>
+      <div id="empty" class="status hidden">
+        <p>مفيش منتجات مطابقة لبحثك.</p>
+        <button id="resetFilters" class="reset-btn" type="button">
+          امسح البحث
+        </button>
+      </div>
+      <div class="grid" id="grid"></div>
+    </main>
+
+    <footer class="footer">
+      <p class="footer-name" id="footerName">متجري</p>
+      <p class="footer-note">
+        العرض والطلب عن طريق واتساب — من غير دفع إلكتروني
+      </p>
+    </footer>
+
+    <a
+      id="fab"
+      class="fab disabled"
+      href="#"
+      target="_blank"
+      rel="noopener"
+      aria-label="تواصل واتساب"
+      title="تواصل واتساب"
+    >
+      <svg viewBox="0 0 448 512" aria-hidden="true">
+        <path
+          d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"
+        />
+      </svg>
+    </a>
+
+    <script>
+      "use strict";
+
+      /* ═══════════════════════════════════════════════════════════════
+   الإعدادات — دي الأجزاء الوحيدة اللي ممكن تحتاج تعدّلها بإيدك
+   كل حاجة تانية بتتغير من جدول Google Sheets نفسه
+   ═══════════════════════════════════════════════════════════════ */
+      const CONFIG = {
+        /* ← الصق رابط جدولك كامل هنا بين علامتي التنصيص (خطوة ٥ في خطوات التشغيل)
+     مثال: SHEET_ID: 'https://docs.google.com/spreadsheets/d/1AbCdEfGh123/edit' */
+        SHEET_ID:
+          "https://docs.google.com/spreadsheets/d/1z9gtqLrQ3QW1z0yPKbBuk0_WnlJQlB4oRjGhFs5c3qo/edit?usp=sharing",
+
+        /* رقم واتساب المحل بالصيغة الدولية — ده احتياطي بس.
+     الأفضل: تحطه في تبويب "إعدادات" جوه الجدول عشان تغيّره بنفسك من موبايلك.
+     مثال: WHATSAPP_NUMBER: '201012345678' */
+        WHATSAPP_NUMBER: "+201124616674",
+
+        /* البيانات الأساسية — بتظهر لو مفيش تبويب "إعدادات" في الجدول */
+        SHOP_NAME: "SOKAR",
+        SHOP_TAGLINE: "اشتري بثقة",
+        CURRENCY: "ج.م",
+        ORDER_MESSAGE: "مرحباً، حابب أطلب: {المنتج} — {السعر} {العملة}",
+
+        /* أسماء التبويبات جوه الجدول — سيبها زي ما هي */
+        TAB_PRODUCTS: "منتجات",
+        TAB_SETTINGS: "إعدادات",
+
+        /* منتجات تجريبية بتظهر قبل ربط الجدول — علشان تشوف شكل الموقع */
+        DEMO_PRODUCTS: [
+          {
+            name: "تيشيرت قطن أوفر سايز",
+            price: 350,
+            desc: "قطن 100% بيج وأسود، مقاسات من M لـ XXL",
+            cat: "ملابس",
+            image: "",
+            available: true,
+          },
+          {
+            name: "هودي شتوي بقلنسوة",
+            price: 550,
+            desc: "قطن مبطن دافي بجيوب أمامية وسحاب معدني",
+            cat: "ملابس",
+            image: "",
+            available: true,
+          },
+          {
+            name: "ساعة يد بسوار جلد",
+            price: 1200,
+            desc: "تصميم كلاسيك بجلد طبيعي ومقاومة للمياه",
+            cat: "إكسسوارات",
+            image: "",
+            available: true,
+          },
+          {
+            name: "سوار جلد مضفر",
+            price: 180,
+            desc: "صناعة يدوية بخيوط جلد متينة بألوان مختلفة",
+            cat: "إكسسوارات",
+            image: "",
+            available: false,
+          },
+          {
+            name: "عطر أورا رجالي 100 مل",
+            price: 750,
+            desc: "ثبات عالي ورائحة تدوم طول اليوم",
+            cat: "عطور",
+            image: "",
+            available: true,
+          },
+          {
+            name: "عطر ياسمين نسائي 50 مل",
+            price: 620,
+            desc: "رائحة زهرية ناعمة مناسبة لكل النهار",
+            cat: "عطور",
+            image: "",
+            available: true,
+          },
+          {
+            name: "شنطة ظهر عملية",
+            price: 480,
+            desc: "مساحة واسعة وجيب مبطن للّابتوب 15 بوصة",
+            cat: "شنط",
+            image: "",
+            available: true,
+          },
+          {
+            name: "سبيكر بلوتوث مقاوم للمياه",
+            price: 900,
+            desc: "صوت قوي وبطارية تدوم لحد 8 ساعات",
+            cat: "إلكترونيات",
+            image: "",
+            available: true,
+          },
+        ],
+      };
+
+      /* ─────────── الحالة العامة ─────────── */
+      let PRODUCTS = [];
+      let SETTINGS = {};
+      let WA_NUMBER = "";
+      let activeCat = "الكل";
+      let query = "";
+
+      const WA_SVG =
+        '<svg viewBox="0 0 448 512" aria-hidden="true"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>';
+
+      /* ─────────── أدوات مساعدة ─────────── */
+      function escHtml(s) {
+        return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+          return {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;",
+          }[c];
+        });
+      }
+      function escAttr(s) {
+        return escHtml(s);
+      }
+
+      function normDigits(s) {
+        return String(s == null ? "" : s)
+          .replace(/[\u0660-\u0669]/g, function (d) {
+            return String(d.charCodeAt(0) - 0x0660);
+          })
+          .replace(/[\u06F0-\u06F9]/g, function (d) {
+            return String(d.charCodeAt(0) - 0x06f0);
+          });
+      }
+      function normKey(s) {
+        return String(s == null ? "" : s)
+          .replace(/\u0640/g, "")
+          .replace(/\s+/g, " ")
+          .trim()
+          .toLowerCase();
+      }
+
+      /* بيقبل رابط الجدول كامل أو رقمه بس — ويرجّع رقم الجدول */
+      function extractSheetId(input) {
+        const s = String(input || "").trim();
+        if (!s) return "";
+        const m = s.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+        if (m) return m[1];
+        return s;
+      }
+
+      /* بيمسك أي صيغة رقم مصرية أو دولية وينضّفها لصيغة wa.me */
+      function sanitizeNumber(raw) {
+        let d = normDigits(String(raw == null ? "" : raw)).replace(/\D/g, "");
+        if (!d) return "";
+        if (d.indexOf("00") === 0) d = d.slice(2);
+        if (d.length === 11 && d.charAt(0) === "0") d = "20" + d.slice(1);
+        else if (d.length === 10 && /^[0125]/.test(d)) d = "20" + d;
+        return d;
+      }
+      function isValidWa(n) {
+        return (
+          /^20\d{10}$/.test(n) || (/^\d{10,15}$/.test(n) && n.charAt(0) !== "0")
+        );
+      }
+
+      /* لو حد حط لينك جوجل درايف للصورة — بيحوّله لصيغة تشتغل */
+      function fixImage(u) {
+        u = String(u || "").trim();
+        if (!u) return "";
+        const m = u.match(/drive\.google\.com\/file\/d\/([\w-]{10,})/);
+        if (m)
+          return "https://drive.google.com/thumbnail?id=" + m[1] + "&sz=w1000";
+        return u;
+      }
+
+      /* ─────────── قراءة Google Sheets ───────────
+         بنحمّل البيانات بطريقة وسم السكريبت (زي الصور والخطوط)
+         ومش بطريقة fetch — لأن المتصفح بيمنع fetch من ملف محلي
+         بيفتح بدبل كليك لأسباب أمان (CORS)، بينما وسم السكريبت
+         بيشتغل سواء الموقع محلي أو مرفوع على استضافة */
+
+      /* طابور ردود جوجل — بيخدم الطلبات واحد واحد في المرة */
+      const gvizQueue = [];
+      window.google = window.google || {};
+      window.google.visualization = window.google.visualization || {
+        Query: {},
+      };
+      window.google.visualization.Query.setResponse = function (resp) {
+        const next = gvizQueue.shift();
+        if (next) next(resp);
+      };
+
+      function loadGviz(sheetId, tab) {
+        return new Promise(function (resolve, reject) {
+          let settled = false;
+          const entry = function (resp) {
+            finish(resolve, resp);
+          };
+          function purge() {
+            const i = gvizQueue.indexOf(entry);
+            if (i !== -1) gvizQueue.splice(i, 1);
+          }
+          function finish(fn, arg) {
+            if (settled) return;
+            settled = true;
+            clearTimeout(timer);
+            fn(arg);
+          }
+          const timer = setTimeout(function () {
+            purge();
+            finish(reject, new Error("timeout"));
+          }, 15000);
+          gvizQueue.push(entry);
+          const s = document.createElement("script");
+          s.onerror = function () {
+            purge();
+            finish(reject, new Error("net"));
+          };
+          s.onload = function () {
+            s.remove();
+          };
+          s.src =
+            "https://docs.google.com/spreadsheets/d/" +
+            sheetId +
+            "/gviz/tq?tqx=out:json&headers=1" +
+            (tab ? "&sheet=" + encodeURIComponent(tab) : "") +
+            "&_=" +
+            Date.now();
+          document.head.appendChild(s);
+        });
+      }
+
+      async function fetchGviz(sheetId, tab) {
+        const resp = await loadGviz(sheetId, tab);
+        if (resp && resp.status === "error") {
+          throw new Error(resp.reason || resp.message || "gviz-error");
+        }
+        const table = resp && resp.table;
+        if (!table) throw new Error("payload");
+        return normalizeTable(table);
+      }
+
+      /* بيحوّل جدول جوجل لشكل موحّد {headers, rows} */
+      function normalizeTable(table) {
+        const headers = (table.cols || []).map(function (c) {
+          return (c && c.label != null ? String(c.label) : "").trim();
+        });
+        const rows = (table.rows || []).map(function (r) {
+          return ((r && r.c) || []).map(function (cell) {
+            return cell && cell.v != null ? String(cell.v) : "";
+          });
+        });
+        return { headers: headers, rows: rows };
+      }
+
+      /* بيفكّ غلاف رد الـ gviz ويرجّع {headers, rows} */
+      function parseGviz(text) {
+        try {
+          const start = text.indexOf("{");
+          const end = text.lastIndexOf("}");
+          if (start < 0 || end <= start) return null;
+          const json = JSON.parse(text.slice(start, end + 1));
+          const table = json && json.table;
+          if (!table) return null;
+          const headers = (table.cols || []).map(function (c) {
+            return (c && c.label != null ? String(c.label) : "").trim();
+          });
+          const rows = (table.rows || []).map(function (r) {
+            return ((r && r.c) || []).map(function (cell) {
+              return cell && cell.v != null ? String(cell.v) : "";
+            });
+          });
+          return { headers: headers, rows: rows };
+        } catch (e) {
+          return null;
+        }
+      }
+
+      const PRODUCT_KEYS = {
+        image: ["الصورة", "صورة", "رابط الصورة", "image", "img"],
+        name: ["الاسم", "اسم المنتج", "المنتج", "اسم", "name"],
+        price: ["السعر", "سعر", "السعر بالجنيه", "price"],
+        desc: ["الوصف", "وصف", "تفاصيل", "التفاصيل", "description"],
+        cat: ["الفئة", "فئة", "التصنيف", "النوع", "category"],
+        avail: ["متاح", "المتاح", "متوفر", "المتوفر", "available"],
+      };
+      const SETTINGS_KEYS = {
+        whatsapp: [
+          "رقم الواتساب",
+          "رقم واتساب",
+          "الواتساب",
+          "واتساب",
+          "رقم المحل",
+          "رقم التليفون",
+          "رقم الهاتف",
+        ],
+        shopName: ["اسم المحل", "اسم المتجر", "اسم الموقع"],
+        tagline: ["نبذة", "نبذة المحل", "الوصف", "وصف المحل"],
+        orderMsg: ["رسالة الطلب", "نص الطلب", "الرسالة"],
+        currency: ["عملة", "العملة", "العمله"],
+      };
+
+      function buildColIndex(headers, keys) {
+        const idx = {};
+        headers.forEach(function (h, i) {
+          const n = normKey(h);
+          if (!n) return;
+          for (const k in keys) {
+            if (keys[k].indexOf(n) !== -1 && idx[k] == null) idx[k] = i;
+          }
+        });
+        return idx;
+      }
+
+      function mapProducts(table) {
+        if (!table || !table.headers || !table.headers.length) {
+          return {
+            error: "الجدول رجّع بيانات فاضية — اتأكد إن رابط الجدول صح.",
+          };
+        }
+        const idx = buildColIndex(table.headers, PRODUCT_KEYS);
+        if (idx.name == null) {
+          return {
+            error:
+              'عمود "الاسم" مش موجود في تبويب منتجات. اتأكد إن رؤوس الأعمدة مكتوبة زي قالب المنتجات بالظبط: الصورة، الاسم، السعر، الوصف، الفئة، متاح.',
+          };
+        }
+        const products = [];
+        for (const row of table.rows) {
+          const get = function (k) {
+            const i = idx[k];
+            return i != null ? String(row[i] == null ? "" : row[i]).trim() : "";
+          };
+          const name = get("name");
+          if (!name) continue; /* صف فاضي أو مكتوب غلط — بنعدّيه */
+          const priceRaw = normDigits(get("price")).replace(/[^\d.]/g, "");
+          const price = priceRaw === "" ? null : parseFloat(priceRaw);
+          let available = true;
+          if (idx.avail != null) {
+            const a = normDigits(get("avail")).trim().toLowerCase();
+            if (
+              [
+                "لا",
+                "no",
+                "false",
+                "0",
+                "غير متاح",
+                "نفد",
+                "خالص",
+                "منتهي",
+              ].indexOf(a) !== -1
+            )
+              available = false;
+          }
+          products.push({
+            image: fixImage(get("image")),
+            name: name,
+            price: price,
+            desc: get("desc"),
+            cat: get("cat"),
+            available: available,
+          });
+        }
+        return { products: products };
+      }
+
+      function mapSettings(table) {
+        const out = {};
+        if (!table) return out;
+        /* أول عمودين هما المفتاح والقيمة — مهما كانت رؤوسهم */
+        for (const row of table.rows) {
+          const key = normKey(row[0]);
+          const val = String(row[1] == null ? "" : row[1]).trim();
+          if (!key || !val) continue;
+          for (const k in SETTINGS_KEYS) {
+            if (SETTINGS_KEYS[k].indexOf(key) !== -1 && out[k] == null)
+              out[k] = val;
+          }
+        }
+        return out;
+      }
+
+      /* ─────────── رسائل واتساب ─────────── */
+      function currency() {
+        return (SETTINGS.currency || CONFIG.CURRENCY || "ج.م").trim();
+      }
+      function fmtNum(n) {
+        return Number(n).toLocaleString("en-US");
+      }
+      function waLink(text) {
+        return (
+          "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(text)
+        );
+      }
+      function orderText(p) {
+        let msg = SETTINGS.orderMsg || CONFIG.ORDER_MESSAGE;
+        msg = msg
+          .replace(/\{المنتج\}/g, p.name)
+          .replace(
+            /\{السعر\}/g,
+            p.price != null ? fmtNum(p.price) : "السعر عند الطلب",
+          )
+          .replace(/\{العملة\}/g, p.price != null ? currency() : "")
+          .replace(/\{الفئة\}/g, p.cat || "");
+        return msg.replace(/[ \t]+/g, " ").trim();
+      }
+
+      /* ─────────── الرسم على الشاشة ─────────── */
+      function renderIdentity() {
+        const name = (SETTINGS.shopName || CONFIG.SHOP_NAME || "متجري").trim();
+        const tag = (SETTINGS.tagline || CONFIG.SHOP_TAGLINE || "").trim();
+        document.getElementById("brandName").textContent = name;
+        document.getElementById("brandTagline").textContent = tag;
+        document.getElementById("footerName").textContent = name;
+        document.getElementById("brandAvatar").textContent =
+          name.trim().charAt(0) || "م";
+        document.title = name + " — اطلب عبر واتساب";
+      }
+
+      function renderChips() {
+        const cats = [];
+        PRODUCTS.forEach(function (p) {
+          const c = (p.cat || "").trim();
+          if (c && cats.indexOf(c) === -1) cats.push(c);
+        });
+        const list = ["الكل"].concat(cats);
+        document.getElementById("chips").innerHTML = list
+          .map(function (c) {
+            const count =
+              c === "الكل"
+                ? PRODUCTS.length
+                : PRODUCTS.filter(function (p) {
+                    return (p.cat || "") === c;
+                  }).length;
+            return (
+              '<button class="chip' +
+              (c === activeCat ? " active" : "") +
+              '" type="button" data-cat="' +
+              escAttr(c) +
+              '">' +
+              escHtml(c) +
+              ' <span class="count">' +
+              count +
+              "</span></button>"
+            );
+          })
+          .join("");
+      }
+
+      function cardHTML(p) {
+        const hue =
+          Array.from(p.name).reduce(function (a, c) {
+            return a + c.charCodeAt(0);
+          }, 0) % 360;
+        const img = p.image
+          ? '<img loading="lazy" src="' +
+            escAttr(p.image) +
+            '" alt="' +
+            escAttr(p.name) +
+            '" onerror="this.remove()">'
+          : "";
+        const tag = p.cat
+          ? '<span class="cat-tag">' + escHtml(p.cat) + "</span>"
+          : "";
+        const sold = !p.available
+          ? '<div class="soldout">نفدت الكمية</div>'
+          : "";
+        const price =
+          p.price != null
+            ? '<div class="p-price">' +
+              fmtNum(p.price) +
+              ' <span class="cur">' +
+              escHtml(currency()) +
+              "</span></div>"
+            : '<div class="p-price"><span class="ask">السعر عند الطلب</span></div>';
+        let order;
+        if (!p.available) {
+          order =
+            '<button class="order-btn disabled" type="button" disabled>' +
+            WA_SVG +
+            "غير متاح حالياً</button>";
+        } else if (WA_NUMBER) {
+          order =
+            '<a class="order-btn" href="' +
+            escAttr(waLink(orderText(p))) +
+            '" target="_blank" rel="noopener">' +
+            WA_SVG +
+            "اطلب عبر واتساب</a>";
+        } else {
+          order =
+            '<button class="order-btn disabled" type="button">' +
+            WA_SVG +
+            "اطلب عبر واتساب</button>";
+        }
+        return (
+          '<article class="card">' +
+          '<div class="thumb">' +
+          '<div class="ph" style="background:linear-gradient(135deg,hsl(' +
+          hue +
+          " 42% 58%),hsl(" +
+          ((hue + 45) % 360) +
+          ' 52% 34%))">' +
+          escHtml(p.name.trim().charAt(0) || "؟") +
+          "</div>" +
+          img +
+          tag +
+          sold +
+          "</div>" +
+          '<div class="card-body">' +
+          '<h3 class="p-name">' +
+          escHtml(p.name) +
+          "</h3>" +
+          (p.desc ? '<p class="p-desc">' + escHtml(p.desc) + "</p>" : "") +
+          price +
+          order +
+          "</div>" +
+          "</article>"
+        );
+      }
+
+      function renderGrid() {
+        const grid = document.getElementById("grid");
+        const empty = document.getElementById("empty");
+        const q = query.trim().toLowerCase();
+        const list = PRODUCTS.filter(function (p) {
+          if (activeCat !== "الكل" && (p.cat || "") !== activeCat) return false;
+          if (q) {
+            const hay = (
+              p.name +
+              " " +
+              (p.desc || "") +
+              " " +
+              (p.cat || "")
+            ).toLowerCase();
+            if (hay.indexOf(q) === -1) return false;
+          }
+          return true;
+        });
+        if (!list.length) {
+          grid.classList.add("hidden");
+          empty.classList.remove("hidden");
+        } else {
+          empty.classList.add("hidden");
+          grid.classList.remove("hidden");
+          grid.innerHTML = list.map(cardHTML).join("");
+        }
+      }
+
+      /* ─────────── رسائل التنبيه والتحميل ─────────── */
+      function showBanner(type, msg) {
+        const wrap = document.getElementById("banners");
+        const b = document.createElement("div");
+        b.className = "banner banner-" + type;
+        b.textContent = msg;
+        const x = document.createElement("button");
+        x.className = "banner-x";
+        x.type = "button";
+        x.setAttribute("aria-label", "إغلاق");
+        x.textContent = "×";
+        x.onclick = function () {
+          b.remove();
+        };
+        b.appendChild(x);
+        wrap.appendChild(b);
+      }
+      function showStatus(t) {
+        document.getElementById("statusText").textContent = t;
+        document.getElementById("status").classList.remove("hidden");
+      }
+      function hideStatus() {
+        document.getElementById("status").classList.add("hidden");
+      }
+
+      /* ─────────── التشغيل ─────────── */
+      function finalize() {
+        const raw = SETTINGS.whatsapp || CONFIG.WHATSAPP_NUMBER;
+        const cleaned = sanitizeNumber(raw);
+        WA_NUMBER = isValidWa(cleaned) ? cleaned : "";
+        renderIdentity();
+        renderChips();
+        renderGrid();
+        const fab = document.getElementById("fab");
+        if (WA_NUMBER) {
+          fab.href = waLink("مرحباً، عندي استفسار عن المنتجات");
+          fab.classList.remove("disabled");
+        } else {
+          fab.href = "#";
+          fab.classList.add("disabled");
+          showBanner(
+            "warn",
+            'رقم الواتساب لسه مش متظبط — حط رقم محلك في تبويب "إعدادات" في الجدول (مثال: 201012345678) وبعدين اعمل Refresh للموقع.',
+          );
+        }
+      }
+
+      async function init() {
+        renderIdentity();
+        const id = extractSheetId(CONFIG.SHEET_ID);
+
+        /* مفيش جدول مربوط → وضع تجريبي */
+        if (!id) {
+          PRODUCTS = CONFIG.DEMO_PRODUCTS.filter(function (p) {
+            return p && p.name;
+          });
+          showBanner(
+            "demo",
+            'ده عرض تجريبي بمنتجات وهمية. أول ما تربط جدول Google Sheets بتاعك هيظهر منتجاتك الحقيقية — الخطوات كاملة في ملف "خطوات-التشغيل.txt".',
+          );
+          finalize();
+          return;
+        }
+
+        showStatus("جاري تحميل المنتجات...");
+        let productsTable = null;
+        let usedFallbackTab = false;
+        try {
+          productsTable = await fetchGviz(id, CONFIG.TAB_PRODUCTS);
+        } catch (e) {
+          /* مش لقينا تبويب "منتجات"؟ بنجرب أول تبويب في الجدول */
+          try {
+            productsTable = await fetchGviz(id, "");
+            usedFallbackTab = true;
+          } catch (e2) {
+            productsTable = null;
+          }
+        }
+        hideStatus();
+
+        if (productsTable) {
+          const mapped = mapProducts(productsTable);
+          if (mapped.error) {
+            showBanner("error", mapped.error);
+            PRODUCTS = CONFIG.DEMO_PRODUCTS.slice();
+          } else {
+            PRODUCTS = mapped.products;
+            if (usedFallbackTab && PRODUCTS.length) {
+              showBanner(
+                "warn",
+                'بنقرأ المنتجات من أول تبويب في الجدول لأننا ملقيناش تبويب اسمه "منتجات" — كل حاجة شغالة، بس لو حابب تنظيم أنضف سمّي التبويب "منتجات" واعمل Refresh.',
+              );
+            }
+            if (!PRODUCTS.length) {
+              showBanner(
+                "warn",
+                'الجدول متوصّل، بس مفيش منتجات لسه — ضيف صفوف في تبويب "منتجات" (كل صف منتج).',
+              );
+            }
+          }
+        } else {
+          showBanner(
+            "error",
+            'تعذّر الوصول لتبويب "منتجات". اتأكد من ٣ حاجات: (١) الجدول مشارك بـ "أي حد عنده الرابط — مُشاهد" من زر Share، (٢) اسم التبويب مكتوب "منتجات" كده بالظبط، (٣) رابط الجدول اللي في إعدادات الموقع صح.',
+          );
+          PRODUCTS = CONFIG.DEMO_PRODUCTS.slice();
+        }
+
+        try {
+          SETTINGS = mapSettings(await fetchGviz(id, CONFIG.TAB_SETTINGS));
+        } catch (e) {
+          /* مفيش تبويب "إعدادات" أو فيه مشكلة — بنستخدم قيم ملف الموقع */
+        }
+
+        finalize();
+      }
+
+      /* ─────────── الأحداث ─────────── */
+      document.getElementById("chips").addEventListener("click", function (e) {
+        const chip = e.target.closest(".chip");
+        if (!chip) return;
+        activeCat = chip.dataset.cat;
+        document.querySelectorAll(".chip").forEach(function (c) {
+          c.classList.toggle("active", c === chip);
+        });
+        renderGrid();
+      });
+
+      const searchInput = document.getElementById("searchInput");
+      let debounceTimer;
+      searchInput.addEventListener("input", function () {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(function () {
+          query = searchInput.value;
+          renderGrid();
+        }, 140);
+      });
+
+      document
+        .getElementById("resetFilters")
+        .addEventListener("click", function () {
+          searchInput.value = "";
+          query = "";
+          activeCat = "الكل";
+          document.querySelectorAll(".chip").forEach(function (c, i) {
+            c.classList.toggle("active", i === 0);
+          });
+          renderGrid();
+        });
+
+      document.getElementById("grid").addEventListener("click", function (e) {
+        const b = e.target.closest(".order-btn.disabled:not([disabled])");
+        if (b) {
+          alert(
+            "زرار الطلب هيسهل لما يتظبط رقم الواتساب — شوف ملف خطوات التشغيل.",
+          );
+        }
+      });
+
+      document.getElementById("fab").addEventListener("click", function (e) {
+        if (!WA_NUMBER) {
+          e.preventDefault();
+          alert(
+            'لازم تحط رقم الواتساب الأول: في الجدول، افتح تبويب "إعدادات" واكتب رقمك في صف "رقم الواتساب" بالصيغة 201012345678.',
+          );
+        }
+      });
+
+      /* أدوات للاختبار — مش بتأثر على تشغيل الموقع */
+      window.__shopTest = {
+        sanitizeNumber: sanitizeNumber,
+        extractSheetId: extractSheetId,
+        parseGviz: parseGviz,
+        isValidWa: isValidWa,
+        mapProducts: mapProducts,
+        mapSettings: mapSettings,
+        normDigits: normDigits,
+        get waNumber() {
+          return WA_NUMBER;
+        },
+        get products() {
+          return PRODUCTS;
+        },
+      };
+
+      init();
+    </script>
+  </body>
+</html>
