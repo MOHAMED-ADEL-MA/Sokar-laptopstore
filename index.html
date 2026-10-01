@@ -1,46 +1,55 @@
 <!doctype html>
-<!--
-  ═══════════════════════════════════════════════════════════════
-  متجر الواتساب — كتالوج منتجات بطلب مباشر عبر واتساب
-  البيانات بتتقري من Google Sheets — شوف ملف "خطوات-التشغيل.txt"
-  لخطوات الربط والنشر خطوة بخطوة.
-  ═══════════════════════════════════════════════════════════════
--->
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>متجري — اطلب عبر واتساب</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>SOKAR — اطلب عبر واتساب</title>
     <meta
       name="description"
       content="كتالوج منتجاتنا — تصفح واطلب مباشرة عبر واتساب"
     />
-    <meta name="theme-color" content="#0f766e" />
+    <meta name="theme-color" content="#442d1f" />
     <link
       rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%231eaa57'/%3E%3Ctext x='50' y='70' font-size='54' text-anchor='middle' fill='white' font-family='Arial'%3E%D9%85%3C/text%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23442d1f'/%3E%3Ctext x='32' y='47' font-size='40' font-weight='700' text-anchor='middle' fill='%23ffb020' font-family='Arial'%3ES%3C/text%3E%3C/svg%3E"
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap"
       rel="stylesheet"
     />
     <style>
       :root {
-        --bg: #f6f5f2;
-        --card: #ffffff;
-        --ink: #1c1917;
-        --muted: #7c7570;
-        --accent: #0f766e;
-        --accent-dark: #0b5d57;
+        --bg: #f6f2ec;
+        --card: #fff;
+        --ink: #2a1c12;
+        --muted: #7a6a5c;
+        --brand: #8a4b12;
+        --onb: #fff;
         --wa: #1eaa57;
-        --wa-dark: #189a4c;
-        --line: #e8e4de;
-        --radius: 16px;
-        --shadow:
-          0 1px 2px rgba(28, 25, 23, 0.05),
-          0 10px 28px -14px rgba(28, 25, 23, 0.18);
+        --wa2: #169248;
+        --line: #e8dfd2;
+        --r: 20px;
+        --sh:
+          0 1px 2px rgba(42, 28, 18, 0.05),
+          0 14px 30px -18px rgba(42, 28, 18, 0.28);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #150f0a;
+          --card: #211912;
+          --ink: #f4ece2;
+          --muted: #a8978a;
+          --line: #33281e;
+          --brand: #f0a93e;
+          --onb: #1a1008;
+          --sh:
+            0 1px 2px rgba(0, 0, 0, 0.3), 0 14px 30px -18px rgba(0, 0, 0, 0.6);
+        }
       }
       * {
         box-sizing: border-box;
@@ -51,183 +60,200 @@
         scroll-behavior: smooth;
       }
       body {
-        font-family: "Cairo", "Segoe UI", Tahoma, system-ui, sans-serif;
+        font-family: Cairo, "Segoe UI", Tahoma, sans-serif;
         background: var(--bg);
         color: var(--ink);
         line-height: 1.6;
         min-height: 100vh;
         display: flex;
         flex-direction: column;
+        -webkit-tap-highlight-color: transparent;
       }
-      input,
-      button {
-        font-family: inherit;
+      button,
+      input {
+        font: inherit;
+        color: inherit;
       }
       .hidden {
         display: none !important;
       }
       :focus-visible {
-        outline: 2px solid var(--accent);
+        outline: 2px solid var(--brand);
         outline-offset: 2px;
       }
+      .sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      }
+      /* الهيرو */
+      .hero {
+        position: relative;
+        overflow: hidden;
+        color: #fff;
+        text-align: center;
+        min-height: clamp(380px, 58vw, 540px);
+        display: flex;
+        align-items: flex-end;
+        padding: 28px 16px 74px;
+        background:
+          radial-gradient(120% 140% at 80% -10%, #e9a23b 0, transparent 55%),
+          linear-gradient(160deg, #6b4423, #2a1a10);
+      }
+      .hero-bg {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: 34% 30%;
+        opacity: 0;
+        transition: opacity 0.9s ease;
+      }
+      .hero-bg.on {
+        opacity: 1;
+      }
+      .hero-bg::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          180deg,
+          rgba(28, 16, 8, 0.12) 0,
+          rgba(28, 16, 8, 0.28) 38%,
+          rgba(22, 12, 5, 0.92) 100%
+        );
+      }
+      .hero-in {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 1080px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+      .hero-logo {
+        width: min(290px, 66vw);
+        filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.5));
+        animation: fadeUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+      .hero-logo svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .hero-logo img {
+        display: block;
+        margin: 0 auto;
+        width: auto;
+        height: auto;
+        max-height: 100px;
+        max-width: 100%;
+        object-fit: contain;
+      }
+      .hero p {
+        font-size: clamp(15px, 3.8vw, 19px);
+        font-weight: 600;
+        color: #f6e7d2;
+        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+        animation: fadeUp 0.9s 0.12s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+      .hero-cta {
+        margin-top: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.34);
+        backdrop-filter: blur(8px);
+        color: #fff;
+        text-decoration: none;
+        padding: 8px 18px;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 14px;
+        transition: background-color 0.25s ease;
+        animation: fadeUp 0.9s 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+      .hero-cta:hover {
+        background: rgba(255, 255, 255, 0.26);
+      }
+      .hero-cta svg,
+      .order-btn svg,
+      .fab svg,
+      .m-order svg {
+        width: 17px;
+        height: 17px;
+        fill: currentColor;
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+      }
 
-      /* ── الهيدر ─────────────────────────────── */
-      .topbar {
+      /* شريط البحث والفئات */
+      .bar {
         position: sticky;
         top: 0;
         z-index: 50;
-        background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border-bottom: 1px solid var(--line);
+        margin-top: -30px;
+        padding: 0 12px;
       }
-      .topbar-inner {
+      .bar-in {
         max-width: 1080px;
         margin: 0 auto;
-        padding: 10px 16px;
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        flex-wrap: wrap;
+        background: color-mix(in srgb, var(--card) 88%, transparent);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        box-shadow: var(--sh);
+        padding: 10px;
       }
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        min-width: 0;
-      }
-      .avatar {
-        width: 42px;
-        height: 42px;
-        border-radius: 12px;
-        flex-shrink: 0;
-        background: linear-gradient(135deg, #0f766e, #14b8a6);
-        color: #fff;
-        font-weight: 800;
-        font-size: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .brand-text {
-        min-width: 0;
-      }
-      .brand-name {
-        font-weight: 800;
-        font-size: 17px;
-        line-height: 1.25;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .brand-tagline {
-        font-size: 11.5px;
-        color: var(--muted);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .search-wrap {
+      .search {
         position: relative;
-        flex: 1;
-        min-width: 200px;
       }
-      .search-wrap svg {
+      .search svg {
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
-        inset-inline-start: 12px;
-        width: 15px;
-        height: 15px;
+        inset-inline-start: 14px;
+        width: 17px;
+        height: 17px;
         color: var(--muted);
         pointer-events: none;
       }
-      #searchInput {
+      #q {
         width: 100%;
-        padding: 9px 14px;
-        padding-inline-start: 36px;
+        padding: 11px 16px;
+        padding-inline-start: 40px;
         border: 1px solid var(--line);
-        border-radius: 999px;
-        background: #fff;
-        font: inherit;
-        font-size: 14px;
-        color: var(--ink);
+        border-radius: 14px;
+        background: var(--bg);
+        font-size: 15px;
         outline: none;
         transition:
-          border-color 0.15s,
-          box-shadow 0.15s;
+          border-color 0.2s,
+          box-shadow 0.2s;
       }
-      #searchInput:focus {
-        border-color: var(--accent);
-        box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+      #q:focus {
+        border-color: var(--brand);
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand) 18%, transparent);
       }
-      #searchInput::placeholder {
-        color: #a8a29e;
-      }
-
-      /* ── رسائل التنبيه ──────────────────────── */
-      #banners {
-        max-width: 1080px;
-        margin: 0 auto;
-        width: 100%;
-        padding: 12px 16px 0;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
-      .banner {
-        position: relative;
-        padding: 10px 14px;
-        padding-inline-end: 36px;
-        border-radius: 12px;
-        font-size: 13.5px;
-        line-height: 1.7;
-        border: 1px solid transparent;
-      }
-      .banner-demo {
-        background: #fef8e7;
-        border-color: #f2dfa5;
-        color: #8a6116;
-      }
-      .banner-error {
-        background: #fdecec;
-        border-color: #f5c6c6;
-        color: #9b2c2c;
-      }
-      .banner-warn {
-        background: #fff4e5;
-        border-color: #ffd9a8;
-        color: #9a5b13;
-      }
-      .banner-x {
-        position: absolute;
-        top: 6px;
-        inset-inline-end: 8px;
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: inherit;
-        font-size: 18px;
-        line-height: 1;
-        opacity: 0.55;
-        padding: 2px 4px;
-      }
-      .banner-x:hover {
-        opacity: 1;
-      }
-
-      /* ── فئات المنتجات ──────────────────────── */
-      .chips-wrap {
-        max-width: 1080px;
-        margin: 0 auto;
-        width: 100%;
-        padding: 10px 16px 4px;
+      #q::placeholder {
+        color: var(--muted);
       }
       .chips {
         display: flex;
         gap: 8px;
         overflow-x: auto;
-        padding-bottom: 6px;
+        padding: 10px 2px 2px;
         scrollbar-width: none;
       }
       .chips::-webkit-scrollbar {
@@ -235,113 +261,129 @@
       }
       .chip {
         flex-shrink: 0;
-        padding: 6px 14px;
+        padding: 6px 15px;
         border-radius: 999px;
         border: 1px solid var(--line);
-        background: #fff;
-        font: inherit;
-        font-size: 13px;
-        font-weight: 600;
-        color: #57534e;
+        background: transparent;
+        font-size: 13.5px;
+        font-weight: 700;
+        color: var(--muted);
         cursor: pointer;
-        transition: all 0.15s;
+        transition:
+          color 0.25s,
+          background-color 0.25s,
+          border-color 0.25s;
       }
       .chip:hover {
-        border-color: var(--accent);
-        color: var(--accent);
+        color: var(--brand);
+        border-color: var(--brand);
       }
-      .chip.active {
-        background: var(--accent);
-        border-color: var(--accent);
-        color: #fff;
+      .chip.on {
+        background: var(--brand);
+        border-color: var(--brand);
+        color: var(--onb);
       }
-      .chip .count {
-        font-size: 11px;
+      .chip small {
         opacity: 0.7;
+        margin-inline-start: 5px;
         font-weight: 600;
-        margin-inline-start: 4px;
       }
 
-      /* ── شبكة المنتجات ──────────────────────── */
+      #banners {
+        max-width: 1080px;
+        margin: 0 auto;
+        width: 100%;
+        padding: 14px 16px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .banner {
+        position: relative;
+        padding: 10px 38px 10px 14px;
+        border-radius: 14px;
+        font-size: 13.5px;
+        border: 1px solid;
+      }
+      .b-demo {
+        background: #fff8e6;
+        border-color: #f2dfa5;
+        color: #8a6116;
+      }
+      .b-error {
+        background: #fdecec;
+        border-color: #f5c6c6;
+        color: #9b2c2c;
+      }
+      .b-warn {
+        background: #fff3e2;
+        border-color: #ffd9a8;
+        color: #9a5b13;
+      }
+      .banner button {
+        position: absolute;
+        top: 6px;
+        inset-inline-end: 10px;
+        background: none;
+        border: 0;
+        font-size: 20px;
+        cursor: pointer;
+        opacity: 0.6;
+      }
+
+      /* الشبكة */
       main {
         flex: 1;
         width: 100%;
         max-width: 1080px;
         margin: 0 auto;
-        padding: 10px 16px 96px;
+        padding: 18px 16px 110px;
       }
       .grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
-        gap: 14px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
       }
       @media (min-width: 640px) {
         .grid {
-          grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+          grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
           gap: 18px;
         }
       }
-      .status {
-        padding: 70px 20px;
-        text-align: center;
-        color: var(--muted);
+      .card {
+        --sh2:
+          0 2px 4px rgba(15, 23, 42, 0.05),
+          0 22px 38px -18px rgba(15, 23, 42, 0.38);
+        background: var(--card);
+        border-radius: var(--r);
+        overflow: hidden;
+        box-shadow: var(--sh);
         display: flex;
         flex-direction: column;
-        align-items: center;
-        gap: 16px;
+        cursor: pointer;
+        border: 1px solid var(--line);
+        transition:
+          transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+          box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        will-change: transform;
       }
-      .spinner {
-        width: 34px;
-        height: 34px;
-        border-radius: 50%;
-        border: 3px solid var(--line);
-        border-top-color: var(--accent);
-        animation: spin 0.8s linear infinite;
-      }
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
+      @media (hover: hover) {
+        .card:hover {
+          transform: translateY(-3px);
+          box-shadow: var(--sh2);
+        }
+        .card:hover .thumb img {
+          transform: scale(1.035);
         }
       }
-      .reset-btn {
-        padding: 7px 20px;
-        border-radius: 999px;
-        border: 1px solid var(--accent);
-        background: #fff;
-        color: var(--accent);
-        font: inherit;
-        font-size: 13px;
-        font-weight: 700;
-        cursor: pointer;
-      }
-      .reset-btn:hover {
-        background: var(--accent);
-        color: #fff;
-      }
-
-      /* ── بطاقة المنتج ───────────────────────── */
-      .card {
-        background: var(--card);
-        border-radius: var(--radius);
-        overflow: hidden;
-        box-shadow: var(--shadow);
-        display: flex;
-        flex-direction: column;
-        transition:
-          transform 0.18s ease,
-          box-shadow 0.18s ease;
-      }
-      .card:hover {
-        transform: translateY(-4px);
-        box-shadow:
-          0 2px 4px rgba(28, 25, 23, 0.06),
-          0 16px 36px -14px rgba(28, 25, 23, 0.25);
+      .card:active {
+        transform: scale(0.985);
+        transition-duration: 0.15s;
       }
       .thumb {
         position: relative;
         aspect-ratio: 1/1;
         overflow: hidden;
-        background: #eee9e2;
       }
       .ph {
         position: absolute;
@@ -349,10 +391,9 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 46px;
-        font-weight: 800;
-        color: rgba(255, 255, 255, 0.92);
-        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+        font-size: 48px;
+        font-weight: 900;
+        color: rgba(255, 255, 255, 0.9);
       }
       .thumb img {
         position: absolute;
@@ -360,72 +401,71 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        display: block;
+        opacity: 0;
+        transition:
+          opacity 0.5s,
+          transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
       }
-      .cat-tag {
+      .thumb img.ok {
+        opacity: 1;
+      }
+      .tag {
         position: absolute;
-        top: 8px;
-        inset-inline-start: 8px;
+        top: 9px;
+        inset-inline-start: 9px;
         z-index: 2;
         background: rgba(255, 255, 255, 0.92);
-        color: #57534e;
-        font-size: 10.5px;
+        color: #334;
+        font-size: 11px;
         font-weight: 700;
-        padding: 2px 9px;
+        padding: 2px 10px;
         border-radius: 999px;
-        border: 1px solid rgba(0, 0, 0, 0.05);
       }
-      .soldout {
+      .sold {
         position: absolute;
         inset: 0;
         z-index: 3;
-        background: rgba(250, 250, 250, 0.72);
+        background: rgba(15, 23, 42, 0.55);
         backdrop-filter: blur(2px);
         display: flex;
         align-items: center;
         justify-content: center;
+        color: #fff;
         font-weight: 800;
-        color: #57534e;
-        font-size: 14px;
       }
-      .card-body {
-        padding: 10px 12px 12px;
+      .body {
+        padding: 12px 13px 13px;
         display: flex;
         flex-direction: column;
-        gap: 5px;
+        gap: 4px;
         flex: 1;
       }
-      .p-name {
+      .name {
         font-weight: 700;
-        font-size: 14.5px;
+        font-size: 15px;
         line-height: 1.4;
       }
-      .p-desc {
-        font-size: 12px;
+      .desc {
+        font-size: 12.5px;
         color: var(--muted);
-        line-height: 1.55;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
       }
-      .p-price {
-        font-weight: 800;
-        font-size: 16.5px;
-        color: var(--accent-dark);
+      .price {
+        font-weight: 900;
+        font-size: 18px;
+        color: var(--brand);
         margin-top: 2px;
       }
-      .p-price .cur {
-        font-size: 11.5px;
+      .price span {
+        font-size: 12px;
         font-weight: 600;
         color: var(--muted);
       }
-      .p-price .ask {
-        font-size: 12.5px;
-        font-weight: 600;
-        color: var(--muted);
-      }
-      .order-btn {
+      .order-btn,
+      .m-order {
         margin-top: auto;
         display: flex;
         align-items: center;
@@ -433,188 +473,363 @@
         gap: 7px;
         background: var(--wa);
         color: #fff;
-        border: none;
-        border-radius: 11px;
-        padding: 9px 10px;
-        font: inherit;
-        font-size: 13.5px;
+        border: 0;
+        border-radius: 13px;
+        padding: 10px;
         font-weight: 700;
+        font-size: 14px;
         cursor: pointer;
         text-decoration: none;
-        transition: background 0.15s;
+        transition:
+          background-color 0.25s ease,
+          transform 0.2s ease;
       }
-      .order-btn:hover {
-        background: var(--wa-dark);
+      .order-btn:hover,
+      .m-order:hover {
+        background: var(--wa2);
       }
-      .order-btn svg {
-        width: 15px;
-        height: 15px;
-        fill: currentColor;
-        flex-shrink: 0;
+      .order-btn:active,
+      .m-order:active {
+        transform: scale(0.96);
       }
-      .order-btn.disabled {
-        background: #d6d3d1;
+      .order-btn.off,
+      .m-order.off {
+        background: var(--line);
+        color: var(--muted);
         cursor: not-allowed;
       }
+      .card.in {
+        animation: rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+        animation-delay: calc(var(--i) * 35ms);
+      }
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+      }
 
-      /* ── الفوتر والزر العائم ────────────────── */
-      .footer {
+      /* هيكل التحميل */
+      .sk {
+        border-radius: var(--r);
+        background: var(--card);
+        border: 1px solid var(--line);
+        overflow: hidden;
+      }
+      .sk i {
+        display: block;
+        background: linear-gradient(
+          90deg,
+          var(--line) 25%,
+          color-mix(in srgb, var(--line) 40%, var(--card)) 50%,
+          var(--line) 75%
+        );
+        background-size: 200% 100%;
+        animation: sh 1.3s linear infinite;
+      }
+      .sk i:first-child {
+        aspect-ratio: 1/1;
+      }
+      .sk i + i {
+        height: 14px;
+        margin: 12px;
+        border-radius: 8px;
+      }
+      .sk i + i + i {
+        width: 50%;
+      }
+      @keyframes sh {
+        to {
+          background-position: -200% 0;
+        }
+      }
+      .empty {
+        text-align: center;
+        padding: 70px 20px;
+        color: var(--muted);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+      }
+      .empty button {
+        padding: 8px 22px;
+        border-radius: 999px;
+        border: 1px solid var(--brand);
+        background: none;
+        color: var(--brand);
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      /* نافذة التفاصيل */
+      .modal {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        background: rgba(8, 12, 30, 0.6);
+        backdrop-filter: blur(4px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s;
+      }
+      .modal.open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .sheet {
+        background: var(--card);
+        width: 100%;
+        max-width: 520px;
+        max-height: 92vh;
+        overflow: auto;
+        border-radius: 26px 26px 0 0;
+        transform: translateY(40px);
+        transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1);
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+      .modal.open .sheet {
+        transform: none;
+      }
+      @media (min-width: 640px) {
+        .modal {
+          align-items: center;
+        }
+        .sheet {
+          border-radius: 26px;
+        }
+      }
+      .m-img {
+        position: relative;
+        aspect-ratio: 1/1;
+        max-height: 46vh;
+        width: 100%;
+      }
+      .m-img .ph {
+        font-size: 80px;
+      }
+      .m-img img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .m-x {
+        position: absolute;
+        top: 12px;
+        inset-inline-end: 12px;
+        z-index: 4;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        border: 0;
+        background: rgba(15, 23, 42, 0.6);
+        color: #fff;
+        font-size: 22px;
+        cursor: pointer;
+      }
+      .m-body {
+        padding: 18px 20px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .m-body h2 {
+        font-size: 21px;
+        line-height: 1.4;
+      }
+      .m-cat {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--brand);
+      }
+      .m-desc {
+        color: var(--muted);
+        font-size: 14.5px;
+        white-space: pre-line;
+      }
+      .m-price {
+        font-size: 26px;
+        font-weight: 900;
+        color: var(--brand);
+      }
+      .m-price span {
+        font-size: 14px;
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .m-order {
+        margin-top: 10px;
+        padding: 14px;
+        font-size: 16px;
+        border-radius: 16px;
+      }
+
+      footer {
         border-top: 1px solid var(--line);
-        background: #fff;
-        padding: 18px 16px 96px;
+        background: var(--card);
+        padding: 22px 16px 100px;
         text-align: center;
       }
-      .footer-name {
-        font-weight: 800;
-        font-size: 15px;
+      footer b {
+        font-weight: 900;
+        letter-spacing: 0.04em;
       }
-      .footer-note {
+      footer p {
         font-size: 12px;
         color: var(--muted);
-        margin-top: 2px;
       }
       .fab {
         position: fixed;
-        bottom: 18px;
+        bottom: calc(18px + env(safe-area-inset-bottom));
         left: 18px;
-        width: 56px;
-        height: 56px;
+        width: 58px;
+        height: 58px;
         border-radius: 50%;
         background: var(--wa);
         color: #fff;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 12px 30px rgba(30, 170, 87, 0.45);
         z-index: 70;
-        transition:
-          transform 0.15s,
-          background 0.15s;
+        box-shadow: 0 12px 30px rgba(30, 170, 87, 0.45);
+        transition: transform 0.2s;
       }
       .fab:hover {
-        transform: scale(1.07);
+        transform: scale(1.08);
       }
       .fab svg {
-        width: 28px;
-        height: 28px;
-        fill: #fff;
+        width: 30px;
+        height: 30px;
       }
-      .fab.disabled {
-        background: #a8a29e;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
-        cursor: not-allowed;
+      .fab::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 2px solid var(--wa);
+        animation: ping 2.4s ease-out infinite;
       }
-      .fab.disabled:hover {
-        transform: none;
+      .fab.off {
+        background: #94a0bd;
+        box-shadow: none;
+      }
+      .fab.off::after {
+        display: none;
+      }
+      @keyframes ping {
+        from {
+          transform: scale(1);
+          opacity: 0.7;
+        }
+        to {
+          transform: scale(1.6);
+          opacity: 0;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition: none !important;
+        }
       }
     </style>
   </head>
   <body>
-    <header class="topbar">
-      <div class="topbar-inner">
-        <div class="brand">
-          <div class="avatar" id="brandAvatar">م</div>
-          <div class="brand-text">
-            <div class="brand-name" id="brandName">متجري</div>
-            <div class="brand-tagline" id="brandTagline">
-              تصفح واطلب عبر واتساب
-            </div>
-          </div>
-        </div>
-        <div class="search-wrap">
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <symbol id="wa" viewBox="0 0 448 512">
+        <path
+          d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.700-30.900c32.400 17.700 68.900 27 106.100 27h.1c122.300 0 224.100-99.600 224.100-222 0-59.300-25.200-115-67.100-157zm-157 341.600c-33.200 0-65.700-8.900-94-25.700l-6.700-4-69.800 18.300L72 359.200l-4.400-7c-18.500-29.400-28.200-63.300-28.200-98.200 0-101.700 82.800-184.500 184.600-184.500 49.300 0 95.600 19.200 130.400 54.100 34.800 34.900 56.200 81.200 56.100 130.500 0 101.800-84.900 184.600-186.600 184.600zm101.200-138.200c-5.500-2.800-32.800-16.200-37.900-18-5.100-1.900-8.800-2.800-12.500 2.800-3.700 5.600-14.300 18-17.600 21.800-3.200 3.700-6.500 4.200-12 1.400-32.600-16.300-54-29.100-75.500-66-5.700-9.800 5.700-9.100 16.300-30.300 1.800-3.700.9-6.900-.5-9.700-1.400-2.800-12.500-30.100-17.100-41.200-4.500-10.800-9.100-9.300-12.500-9.500-3.200-.2-6.900-.2-10.600-.2-3.700 0-9.700 1.400-14.800 6.900-5.100 5.600-19.400 19-19.400 46.300 0 27.300 19.900 53.700 22.600 57.400 2.800 3.700 39.100 59.700 94.800 83.800 35.200 15.200 49 16.500 66.600 13.900 10.700-1.600 32.800-13.400 37.400-26.400 4.600-13 4.600-24.100 3.200-26.400-1.300-2.500-5-3.900-10.500-6.600z"
+        />
+      </symbol>
+    </svg>
+
+    <header class="hero">
+      <div class="hero-bg" id="heroBg"></div>
+      <div class="hero-in">
+        <div class="hero-logo" id="heroLogo"></div>
+        <h1 class="sr" id="brandName">SOKAR</h1>
+        <p id="brandTagline">اشتري بثقة</p>
+        <a class="hero-cta" id="heroCta" href="#" target="_blank" rel="noopener"
+          ><svg><use href="#wa" /></svg>تواصل معنا على واتساب</a
+        >
+      </div>
+    </header>
+
+    <div class="bar">
+      <div class="bar-in">
+        <div class="search">
           <svg
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
             stroke-width="2.2"
             stroke-linecap="round"
-            aria-hidden="true"
           >
-            <circle cx="11" cy="11" r="7"></circle>
-            <line x1="16.5" y1="16.5" x2="21" y2="21"></line>
+            <circle cx="11" cy="11" r="7" />
+            <line x1="16.500" y1="16.500" x2="21" y2="21" />
           </svg>
           <input
-            id="searchInput"
+            id="q"
             type="search"
             placeholder="ابحث عن منتج..."
             autocomplete="off"
           />
         </div>
+        <div class="chips" id="chips"></div>
       </div>
-    </header>
+    </div>
 
     <div id="banners"></div>
 
-    <nav class="chips-wrap" aria-label="فئات المنتجات">
-      <div class="chips" id="chips"></div>
-    </nav>
-
     <main>
-      <div id="status" class="status hidden">
-        <div class="spinner"></div>
-        <p id="statusText">جاري تحميل المنتجات...</p>
-      </div>
-      <div id="empty" class="status hidden">
-        <p>مفيش منتجات مطابقة لبحثك.</p>
-        <button id="resetFilters" class="reset-btn" type="button">
-          امسح البحث
-        </button>
-      </div>
       <div class="grid" id="grid"></div>
+      <div class="empty hidden" id="empty">
+        <p>مفيش منتجات مطابقة لبحثك.</p>
+        <button id="reset" type="button">امسح البحث</button>
+      </div>
     </main>
 
-    <footer class="footer">
-      <p class="footer-name" id="footerName">متجري</p>
-      <p class="footer-note">
-        العرض والطلب عن طريق واتساب — من غير دفع إلكتروني
-      </p>
+    <footer>
+      <p><b id="footerName">SOKAR</b></p>
+      <p>العرض والطلب عن طريق واتساب — من غير دفع إلكتروني</p>
     </footer>
 
     <a
       id="fab"
-      class="fab disabled"
+      class="fab off"
       href="#"
       target="_blank"
       rel="noopener"
       aria-label="تواصل واتساب"
-      title="تواصل واتساب"
-    >
-      <svg viewBox="0 0 448 512" aria-hidden="true">
-        <path
-          d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"
-        />
-      </svg>
-    </a>
+      ><svg><use href="#wa" /></svg
+    ></a>
+
+    <div class="modal" id="modal" aria-hidden="true">
+      <div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
+    </div>
 
     <script>
       "use strict";
-
-      /* ═══════════════════════════════════════════════════════════════
-   الإعدادات — دي الأجزاء الوحيدة اللي ممكن تحتاج تعدّلها بإيدك
-   كل حاجة تانية بتتغير من جدول Google Sheets نفسه
-   ═══════════════════════════════════════════════════════════════ */
+      /* ═══ الإعدادات ═══ */
       const CONFIG = {
-        /* ← الصق رابط جدولك كامل هنا بين علامتي التنصيص (خطوة ٥ في خطوات التشغيل)
-     مثال: SHEET_ID: 'https://docs.google.com/spreadsheets/d/1AbCdEfGh123/edit' */
         SHEET_ID:
           "https://docs.google.com/spreadsheets/d/1z9gtqLrQ3QW1z0yPKbBuk0_WnlJQlB4oRjGhFs5c3qo/edit?usp=sharing",
-
-        /* رقم واتساب المحل بالصيغة الدولية — ده احتياطي بس.
-     الأفضل: تحطه في تبويب "إعدادات" جوه الجدول عشان تغيّره بنفسك من موبايلك.
-     مثال: WHATSAPP_NUMBER: '201012345678' */
         WHATSAPP_NUMBER: "+201124616674",
-
-        /* البيانات الأساسية — بتظهر لو مفيش تبويب "إعدادات" في الجدول */
         SHOP_NAME: "SOKAR",
         SHOP_TAGLINE: "اشتري بثقة",
         CURRENCY: "ج.م",
         ORDER_MESSAGE: "مرحباً، حابب أطلب: {المنتج} — {السعر} {العملة}",
-
-        /* أسماء التبويبات جوه الجدول — سيبها زي ما هي */
+        /* صورة الغلاف واللوجو: ارفعهم جنب index.html بنفس الأسماء دي (أو غيّر الاسم هنا) */
+        COVER_IMAGE: "cover.jpg",
+        LOGO_IMAGE:
+          "" /* اختياري: لوجو بديل (الافتراضي هو لوجو SOKAR المدمج في الصفحة) */,
         TAB_PRODUCTS: "منتجات",
         TAB_SETTINGS: "إعدادات",
-
-        /* منتجات تجريبية بتظهر قبل ربط الجدول — علشان تشوف شكل الموقع */
         DEMO_PRODUCTS: [
           {
             name: "تيشيرت قطن أوفر سايز",
@@ -643,7 +858,7 @@
           {
             name: "سوار جلد مضفر",
             price: 180,
-            desc: "صناعة يدوية بخيوط جلد متينة بألوان مختلفة",
+            desc: "صناعة يدوية بخيوط جلد متينة",
             cat: "إكسسوارات",
             image: "",
             available: false,
@@ -657,155 +872,107 @@
             available: true,
           },
           {
-            name: "عطر ياسمين نسائي 50 مل",
-            price: 620,
-            desc: "رائحة زهرية ناعمة مناسبة لكل النهار",
-            cat: "عطور",
-            image: "",
-            available: true,
-          },
-          {
             name: "شنطة ظهر عملية",
             price: 480,
-            desc: "مساحة واسعة وجيب مبطن للّابتوب 15 بوصة",
+            desc: "مساحة واسعة وجيب مبطن للابتوب 15 بوصة",
             cat: "شنط",
-            image: "",
-            available: true,
-          },
-          {
-            name: "سبيكر بلوتوث مقاوم للمياه",
-            price: 900,
-            desc: "صوت قوي وبطارية تدوم لحد 8 ساعات",
-            cat: "إلكترونيات",
             image: "",
             available: true,
           },
         ],
       };
 
-      /* ─────────── الحالة العامة ─────────── */
-      let PRODUCTS = [];
-      let SETTINGS = {};
-      let WA_NUMBER = "";
-      let activeCat = "الكل";
-      let query = "";
+      let PRODUCTS = [],
+        SETTINGS = {},
+        WA = "",
+        activeCat = "الكل",
+        query = "";
+      const $ = (id) => document.getElementById(id);
+      const WORDMARK =
+        '<svg viewBox="480 900 1040 200" fill="#fff" role="img" aria-label="SOKAR"><path  d="M955.45,1000l113.33,91.34-158.93.66V908.05l160.64.49Zm36-63.68-54.78-1.17.54,44.3ZM991.07,1064,937,1020.32l-.21,44.54Z"/><path  d="M1330.89,1091.57l-201.84.38,101.69-183.62Zm-44.3-25.23-56-102.86L1173.79,1067Z"/><polygon  points="1486.83 935.22 1416.45 935.58 1416.51 1091.22 1389.46 1091.94 1389.47 908.1 1513.8 908.23 1514.09 960.53 1486.98 961.11 1486.83 935.22"/><polygon  points="515.75 1091.94 500.84 1069.84 563.92 1035.43 485.91 959.65 579.48 908.33 593.13 931.25 530.56 965.34 608.98 1041.2 515.75 1091.94"/><path  d="M851.27,1000.09a91.86,91.86,0,1,1-91.86-91.86A91.86,91.86,0,0,1,851.27,1000.09Zm-27.26,0a64.59,64.59,0,1,0-64.59,64.59A64.59,64.59,0,0,0,824,1000.09Z"/><circle  cx="759.41" cy="1000.03" r="18.56"/></svg>';
 
-      const WA_SVG =
-        '<svg viewBox="0 0 448 512" aria-hidden="true"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>';
-
-      /* ─────────── أدوات مساعدة ─────────── */
-      function escHtml(s) {
-        return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
-          return {
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            '"': "&quot;",
-            "'": "&#39;",
-          }[c];
-        });
-      }
-      function escAttr(s) {
-        return escHtml(s);
-      }
-
-      function normDigits(s) {
-        return String(s == null ? "" : s)
-          .replace(/[\u0660-\u0669]/g, function (d) {
-            return String(d.charCodeAt(0) - 0x0660);
-          })
-          .replace(/[\u06F0-\u06F9]/g, function (d) {
-            return String(d.charCodeAt(0) - 0x06f0);
-          });
-      }
-      function normKey(s) {
-        return String(s == null ? "" : s)
+      /* ═══ أدوات مساعدة ═══ */
+      const esc = (s) =>
+        String(s == null ? "" : s).replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+      const normDigits = (s) =>
+        String(s == null ? "" : s)
+          .replace(/[\u0660-\u0669]/g, (d) => d.charCodeAt(0) - 0x660)
+          .replace(/[\u06F0-\u06F9]/g, (d) => d.charCodeAt(0) - 0x6f0);
+      const normKey = (s) =>
+        String(s == null ? "" : s)
           .replace(/\u0640/g, "")
           .replace(/\s+/g, " ")
           .trim()
           .toLowerCase();
-      }
-
-      /* بيقبل رابط الجدول كامل أو رقمه بس — ويرجّع رقم الجدول */
       function extractSheetId(input) {
-        const s = String(input || "").trim();
-        if (!s) return "";
-        const m = s.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
-        if (m) return m[1];
-        return s;
+        const s = String(input || "").trim(),
+          m = s.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+        return m ? m[1] : s;
       }
-
-      /* بيمسك أي صيغة رقم مصرية أو دولية وينضّفها لصيغة wa.me */
       function sanitizeNumber(raw) {
-        let d = normDigits(String(raw == null ? "" : raw)).replace(/\D/g, "");
+        let d = normDigits(raw == null ? "" : raw).replace(/\D/g, "");
         if (!d) return "";
         if (d.indexOf("00") === 0) d = d.slice(2);
-        if (d.length === 11 && d.charAt(0) === "0") d = "20" + d.slice(1);
+        if (d.length === 11 && d[0] === "0") d = "20" + d.slice(1);
         else if (d.length === 10 && /^[0125]/.test(d)) d = "20" + d;
         return d;
       }
-      function isValidWa(n) {
-        return (
-          /^20\d{10}$/.test(n) || (/^\d{10,15}$/.test(n) && n.charAt(0) !== "0")
-        );
-      }
-
-      /* لو حد حط لينك جوجل درايف للصورة — بيحوّله لصيغة تشتغل */
+      const isValidWa = (n) =>
+        /^20\d{10}$/.test(n) || (/^\d{10,15}$/.test(n) && n[0] !== "0");
       function fixImage(u) {
         u = String(u || "").trim();
-        if (!u) return "";
         const m = u.match(/drive\.google\.com\/file\/d\/([\w-]{10,})/);
-        if (m)
-          return "https://drive.google.com/thumbnail?id=" + m[1] + "&sz=w1000";
-        return u;
+        return m
+          ? "https://drive.google.com/thumbnail?id=" + m[1] + "&sz=w1000"
+          : u;
       }
 
-      /* ─────────── قراءة Google Sheets ───────────
-         بنحمّل البيانات بطريقة وسم السكريبت (زي الصور والخطوط)
-         ومش بطريقة fetch — لأن المتصفح بيمنع fetch من ملف محلي
-         بيفتح بدبل كليك لأسباب أمان (CORS)، بينما وسم السكريبت
-         بيشتغل سواء الموقع محلي أو مرفوع على استضافة */
-
-      /* طابور ردود جوجل — بيخدم الطلبات واحد واحد في المرة */
+      /* ═══ قراءة Google Sheets (بوسم script عشان يشتغل محلي وعلى الاستضافة) ═══ */
       const gvizQueue = [];
       window.google = window.google || {};
       window.google.visualization = window.google.visualization || {
         Query: {},
       };
-      window.google.visualization.Query.setResponse = function (resp) {
-        const next = gvizQueue.shift();
-        if (next) next(resp);
+      window.google.visualization.Query.setResponse = (resp) => {
+        const n = gvizQueue.shift();
+        if (n) n(resp);
       };
 
       function loadGviz(sheetId, tab) {
-        return new Promise(function (resolve, reject) {
-          let settled = false;
-          const entry = function (resp) {
-            finish(resolve, resp);
-          };
-          function purge() {
+        return new Promise((resolve, reject) => {
+          let done = false;
+          const entry = (r) => finish(resolve, r);
+          const purge = () => {
             const i = gvizQueue.indexOf(entry);
-            if (i !== -1) gvizQueue.splice(i, 1);
-          }
-          function finish(fn, arg) {
-            if (settled) return;
-            settled = true;
+            if (i > -1) gvizQueue.splice(i, 1);
+          };
+          const finish = (fn, a) => {
+            if (done) return;
+            done = true;
             clearTimeout(timer);
-            fn(arg);
-          }
-          const timer = setTimeout(function () {
+            fn(a);
+          };
+          const timer = setTimeout(() => {
             purge();
             finish(reject, new Error("timeout"));
           }, 15000);
           gvizQueue.push(entry);
           const s = document.createElement("script");
-          s.onerror = function () {
+          s.onerror = () => {
             purge();
             finish(reject, new Error("net"));
           };
-          s.onload = function () {
-            s.remove();
-          };
+          s.onload = () => s.remove();
           s.src =
             "https://docs.google.com/spreadsheets/d/" +
             sheetId +
@@ -816,51 +983,22 @@
           document.head.appendChild(s);
         });
       }
-
       async function fetchGviz(sheetId, tab) {
         const resp = await loadGviz(sheetId, tab);
-        if (resp && resp.status === "error") {
-          throw new Error(resp.reason || resp.message || "gviz-error");
-        }
-        const table = resp && resp.table;
-        if (!table) throw new Error("payload");
-        return normalizeTable(table);
-      }
-
-      /* بيحوّل جدول جوجل لشكل موحّد {headers, rows} */
-      function normalizeTable(table) {
-        const headers = (table.cols || []).map(function (c) {
-          return (c && c.label != null ? String(c.label) : "").trim();
-        });
-        const rows = (table.rows || []).map(function (r) {
-          return ((r && r.c) || []).map(function (cell) {
-            return cell && cell.v != null ? String(cell.v) : "";
-          });
-        });
-        return { headers: headers, rows: rows };
-      }
-
-      /* بيفكّ غلاف رد الـ gviz ويرجّع {headers, rows} */
-      function parseGviz(text) {
-        try {
-          const start = text.indexOf("{");
-          const end = text.lastIndexOf("}");
-          if (start < 0 || end <= start) return null;
-          const json = JSON.parse(text.slice(start, end + 1));
-          const table = json && json.table;
-          if (!table) return null;
-          const headers = (table.cols || []).map(function (c) {
-            return (c && c.label != null ? String(c.label) : "").trim();
-          });
-          const rows = (table.rows || []).map(function (r) {
-            return ((r && r.c) || []).map(function (cell) {
-              return cell && cell.v != null ? String(cell.v) : "";
-            });
-          });
-          return { headers: headers, rows: rows };
-        } catch (e) {
-          return null;
-        }
+        if (resp && resp.status === "error")
+          throw new Error(resp.reason || "gviz-error");
+        const t = resp && resp.table;
+        if (!t) throw new Error("payload");
+        return {
+          headers: (t.cols || []).map((c) =>
+            (c && c.label != null ? String(c.label) : "").trim(),
+          ),
+          rows: (t.rows || []).map((r) =>
+            ((r && r.c) || []).map((c) =>
+              c && c.v != null ? String(c.v) : "",
+            ),
+          ),
+        };
       }
 
       const PRODUCT_KEYS = {
@@ -885,297 +1023,325 @@
         tagline: ["نبذة", "نبذة المحل", "الوصف", "وصف المحل"],
         orderMsg: ["رسالة الطلب", "نص الطلب", "الرسالة"],
         currency: ["عملة", "العملة", "العمله"],
+        cover: ["غلاف", "الغلاف", "صورة الغلاف", "رابط الغلاف"],
+        logo: [
+          "لوجو",
+          "اللوجو",
+          "شعار",
+          "الشعار",
+          "رابط اللوجو",
+          "رابط الشعار",
+        ],
       };
-
       function buildColIndex(headers, keys) {
         const idx = {};
-        headers.forEach(function (h, i) {
+        headers.forEach((h, i) => {
           const n = normKey(h);
           if (!n) return;
-          for (const k in keys) {
+          for (const k in keys)
             if (keys[k].indexOf(n) !== -1 && idx[k] == null) idx[k] = i;
-          }
         });
         return idx;
       }
-
-      function mapProducts(table) {
-        if (!table || !table.headers || !table.headers.length) {
+      function mapProducts(t) {
+        if (!t || !t.headers || !t.headers.length)
           return {
             error: "الجدول رجّع بيانات فاضية — اتأكد إن رابط الجدول صح.",
           };
-        }
-        const idx = buildColIndex(table.headers, PRODUCT_KEYS);
-        if (idx.name == null) {
+        const idx = buildColIndex(t.headers, PRODUCT_KEYS);
+        if (idx.name == null)
           return {
             error:
-              'عمود "الاسم" مش موجود في تبويب منتجات. اتأكد إن رؤوس الأعمدة مكتوبة زي قالب المنتجات بالظبط: الصورة، الاسم، السعر، الوصف، الفئة، متاح.',
+              'عمود "الاسم" مش موجود في تبويب منتجات. رؤوس الأعمدة لازم تكون: الصورة، الاسم، السعر، الوصف، الفئة، متاح.',
           };
-        }
-        const products = [];
-        for (const row of table.rows) {
-          const get = function (k) {
-            const i = idx[k];
-            return i != null ? String(row[i] == null ? "" : row[i]).trim() : "";
-          };
+        const out = [];
+        for (const row of t.rows) {
+          const get = (k) =>
+            idx[k] != null
+              ? String(row[idx[k]] == null ? "" : row[idx[k]]).trim()
+              : "";
           const name = get("name");
-          if (!name) continue; /* صف فاضي أو مكتوب غلط — بنعدّيه */
-          const priceRaw = normDigits(get("price")).replace(/[^\d.]/g, "");
-          const price = priceRaw === "" ? null : parseFloat(priceRaw);
+          if (!name) continue;
+          const pr = normDigits(get("price")).replace(/[^\d.]/g, "");
           let available = true;
-          if (idx.avail != null) {
-            const a = normDigits(get("avail")).trim().toLowerCase();
-            if (
-              [
-                "لا",
-                "no",
-                "false",
-                "0",
-                "غير متاح",
-                "نفد",
-                "خالص",
-                "منتهي",
-              ].indexOf(a) !== -1
-            )
-              available = false;
-          }
-          products.push({
+          if (
+            idx.avail != null &&
+            [
+              "لا",
+              "no",
+              "false",
+              "0",
+              "غير متاح",
+              "نفد",
+              "خالص",
+              "منتهي",
+            ].indexOf(normDigits(get("avail")).trim().toLowerCase()) !== -1
+          )
+            available = false;
+          out.push({
             image: fixImage(get("image")),
-            name: name,
-            price: price,
+            name,
+            price: pr === "" ? null : parseFloat(pr),
             desc: get("desc"),
             cat: get("cat"),
-            available: available,
+            available,
           });
         }
-        return { products: products };
+        return { products: out };
       }
-
-      function mapSettings(table) {
+      function mapSettings(t) {
         const out = {};
-        if (!table) return out;
-        /* أول عمودين هما المفتاح والقيمة — مهما كانت رؤوسهم */
-        for (const row of table.rows) {
-          const key = normKey(row[0]);
-          const val = String(row[1] == null ? "" : row[1]).trim();
+        if (!t) return out;
+        for (const row of t.rows) {
+          const key = normKey(row[0]),
+            val = String(row[1] == null ? "" : row[1]).trim();
           if (!key || !val) continue;
-          for (const k in SETTINGS_KEYS) {
+          for (const k in SETTINGS_KEYS)
             if (SETTINGS_KEYS[k].indexOf(key) !== -1 && out[k] == null)
               out[k] = val;
-          }
         }
         return out;
       }
 
-      /* ─────────── رسائل واتساب ─────────── */
-      function currency() {
-        return (SETTINGS.currency || CONFIG.CURRENCY || "ج.م").trim();
-      }
-      function fmtNum(n) {
-        return Number(n).toLocaleString("en-US");
-      }
-      function waLink(text) {
-        return (
-          "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(text)
-        );
-      }
+      /* ═══ واتساب ═══ */
+      const currency = () =>
+        (SETTINGS.currency || CONFIG.CURRENCY || "ج.م").trim();
+      const fmt = (n) => Number(n).toLocaleString("en-US");
+      const waLink = (t) =>
+        "https://wa.me/" + WA + "?text=" + encodeURIComponent(t);
       function orderText(p) {
-        let msg = SETTINGS.orderMsg || CONFIG.ORDER_MESSAGE;
-        msg = msg
+        return (SETTINGS.orderMsg || CONFIG.ORDER_MESSAGE)
           .replace(/\{المنتج\}/g, p.name)
           .replace(
             /\{السعر\}/g,
-            p.price != null ? fmtNum(p.price) : "السعر عند الطلب",
+            p.price != null ? fmt(p.price) : "السعر عند الطلب",
           )
           .replace(/\{العملة\}/g, p.price != null ? currency() : "")
-          .replace(/\{الفئة\}/g, p.cat || "");
-        return msg.replace(/[ \t]+/g, " ").trim();
+          .replace(/\{الفئة\}/g, p.cat || "")
+          .replace(/[ \t]+/g, " ")
+          .trim();
       }
 
-      /* ─────────── الرسم على الشاشة ─────────── */
+      /* ═══ الرسم ═══ */
       function renderIdentity() {
         const name = (SETTINGS.shopName || CONFIG.SHOP_NAME || "متجري").trim();
         const tag = (SETTINGS.tagline || CONFIG.SHOP_TAGLINE || "").trim();
-        document.getElementById("brandName").textContent = name;
-        document.getElementById("brandTagline").textContent = tag;
-        document.getElementById("footerName").textContent = name;
-        document.getElementById("brandAvatar").textContent =
-          name.trim().charAt(0) || "م";
+        $("brandName").textContent = name;
+        $("brandTagline").textContent = tag;
+        $("footerName").textContent = name;
         document.title = name + " — اطلب عبر واتساب";
+        const L = $("heroLogo"),
+          lu = fixImage(SETTINGS.logo || CONFIG.LOGO_IMAGE || "");
+        if (L.dataset.src !== lu) {
+          L.dataset.src = lu;
+          L.innerHTML = WORDMARK;
+          if (lu) {
+            const im = new Image();
+            im.onload = () => {
+              if (L.dataset.src !== lu) return;
+              im.alt = name;
+              L.innerHTML = "";
+              L.appendChild(im);
+            };
+            im.src = lu;
+          }
+        }
+        const B = $("heroBg"),
+          cu = fixImage(SETTINGS.cover || CONFIG.COVER_IMAGE || "");
+        if (B.dataset.src !== cu) {
+          B.dataset.src = cu;
+          B.classList.remove("on");
+          if (cu) {
+            const im = new Image();
+            im.onload = () => {
+              if (B.dataset.src !== cu) return;
+              B.style.backgroundImage =
+                "url('" + cu.replace(/'/g, "%27") + "')";
+              B.classList.add("on");
+            };
+            im.src = cu;
+          }
+        }
       }
-
       function renderChips() {
         const cats = [];
-        PRODUCTS.forEach(function (p) {
+        PRODUCTS.forEach((p) => {
           const c = (p.cat || "").trim();
           if (c && cats.indexOf(c) === -1) cats.push(c);
         });
-        const list = ["الكل"].concat(cats);
-        document.getElementById("chips").innerHTML = list
-          .map(function (c) {
-            const count =
+        $("chips").innerHTML = ["الكل"]
+          .concat(cats)
+          .map((c) => {
+            const n =
               c === "الكل"
                 ? PRODUCTS.length
-                : PRODUCTS.filter(function (p) {
-                    return (p.cat || "") === c;
-                  }).length;
+                : PRODUCTS.filter((p) => p.cat === c).length;
             return (
               '<button class="chip' +
-              (c === activeCat ? " active" : "") +
+              (c === activeCat ? " on" : "") +
               '" type="button" data-cat="' +
-              escAttr(c) +
+              esc(c) +
               '">' +
-              escHtml(c) +
-              ' <span class="count">' +
-              count +
-              "</span></button>"
+              esc(c) +
+              "<small>" +
+              n +
+              "</small></button>"
             );
           })
           .join("");
       }
-
-      function cardHTML(p) {
-        const hue =
-          Array.from(p.name).reduce(function (a, c) {
-            return a + c.charCodeAt(0);
-          }, 0) % 360;
-        const img = p.image
-          ? '<img loading="lazy" src="' +
-            escAttr(p.image) +
-            '" alt="' +
-            escAttr(p.name) +
-            '" onerror="this.remove()">'
-          : "";
-        const tag = p.cat
-          ? '<span class="cat-tag">' + escHtml(p.cat) + "</span>"
-          : "";
-        const sold = !p.available
-          ? '<div class="soldout">نفدت الكمية</div>'
-          : "";
-        const price =
-          p.price != null
-            ? '<div class="p-price">' +
-              fmtNum(p.price) +
-              ' <span class="cur">' +
-              escHtml(currency()) +
-              "</span></div>"
-            : '<div class="p-price"><span class="ask">السعر عند الطلب</span></div>';
-        let order;
-        if (!p.available) {
-          order =
-            '<button class="order-btn disabled" type="button" disabled>' +
-            WA_SVG +
-            "غير متاح حالياً</button>";
-        } else if (WA_NUMBER) {
-          order =
-            '<a class="order-btn" href="' +
-            escAttr(waLink(orderText(p))) +
-            '" target="_blank" rel="noopener">' +
-            WA_SVG +
-            "اطلب عبر واتساب</a>";
-        } else {
-          order =
-            '<button class="order-btn disabled" type="button">' +
-            WA_SVG +
-            "اطلب عبر واتساب</button>";
-        }
+      function orderBtn(p, cls) {
+        if (!p.available)
+          return (
+            '<button class="' +
+            cls +
+            ' off" type="button" disabled>غير متاح حالياً</button>'
+          );
+        if (!WA)
+          return (
+            '<button class="' +
+            cls +
+            ' off" type="button" disabled>الطلب غير متاح حالياً</button>'
+          );
         return (
-          '<article class="card">' +
-          '<div class="thumb">' +
-          '<div class="ph" style="background:linear-gradient(135deg,hsl(' +
-          hue +
-          " 42% 58%),hsl(" +
-          ((hue + 45) % 360) +
-          ' 52% 34%))">' +
-          escHtml(p.name.trim().charAt(0) || "؟") +
-          "</div>" +
-          img +
-          tag +
-          sold +
-          "</div>" +
-          '<div class="card-body">' +
-          '<h3 class="p-name">' +
-          escHtml(p.name) +
-          "</h3>" +
-          (p.desc ? '<p class="p-desc">' + escHtml(p.desc) + "</p>" : "") +
-          price +
-          order +
-          "</div>" +
-          "</article>"
+          '<a class="' +
+          cls +
+          '" href="' +
+          esc(waLink(orderText(p))) +
+          '" target="_blank" rel="noopener"><svg><use href="#wa"/></svg>اطلب الآن</a>'
         );
       }
+      function phHTML(p) {
+        const h =
+          Array.from(p.name).reduce((a, c) => a + c.charCodeAt(0), 0) % 360;
+        return (
+          '<div class="ph" style="background:linear-gradient(135deg,hsl(' +
+          h +
+          " 55% 58%),hsl(" +
+          ((h + 50) % 360) +
+          ' 60% 36%))">' +
+          esc(p.name.trim().charAt(0) || "؟") +
+          "</div>"
+        );
+      }
+      const imgHTML = (p) =>
+        p.image
+          ? '<img loading="lazy" src="' +
+            esc(p.image) +
+            '" alt="' +
+            esc(p.name) +
+            '" onload="this.classList.add(\'ok\')" onerror="this.remove()">'
+          : "";
+      const priceHTML = (p, cls) =>
+        p.price != null
+          ? '<div class="' +
+            cls +
+            '">' +
+            fmt(p.price) +
+            " <span>" +
+            esc(currency()) +
+            "</span></div>"
+          : '<div class="' + cls + '"><span>السعر عند الطلب</span></div>';
 
+      function cardHTML(p, i) {
+        return (
+          '<article class="card in" style="--i:' +
+          Math.min(i, 14) +
+          '" data-i="' +
+          p._i +
+          '"><div class="thumb">' +
+          phHTML(p) +
+          imgHTML(p) +
+          (p.cat ? '<span class="tag">' + esc(p.cat) + "</span>" : "") +
+          (!p.available ? '<div class="sold">نفدت الكمية</div>' : "") +
+          '</div><div class="body"><h3 class="name">' +
+          esc(p.name) +
+          "</h3>" +
+          (p.desc ? '<p class="desc">' + esc(p.desc) + "</p>" : "") +
+          priceHTML(p, "price") +
+          orderBtn(p, "order-btn") +
+          "</div></article>"
+        );
+      }
       function renderGrid() {
-        const grid = document.getElementById("grid");
-        const empty = document.getElementById("empty");
         const q = query.trim().toLowerCase();
-        const list = PRODUCTS.filter(function (p) {
-          if (activeCat !== "الكل" && (p.cat || "") !== activeCat) return false;
-          if (q) {
-            const hay = (
-              p.name +
-              " " +
-              (p.desc || "") +
-              " " +
-              (p.cat || "")
-            ).toLowerCase();
-            if (hay.indexOf(q) === -1) return false;
-          }
-          return true;
-        });
-        if (!list.length) {
-          grid.classList.add("hidden");
-          empty.classList.remove("hidden");
-        } else {
-          empty.classList.add("hidden");
-          grid.classList.remove("hidden");
-          grid.innerHTML = list.map(cardHTML).join("");
-        }
+        const list = PRODUCTS.filter(
+          (p) =>
+            (activeCat === "الكل" || p.cat === activeCat) &&
+            (!q ||
+              (p.name + " " + p.desc + " " + p.cat).toLowerCase().indexOf(q) !==
+                -1),
+        );
+        $("empty").classList.toggle("hidden", !!list.length);
+        $("grid").classList.toggle("hidden", !list.length);
+        $("grid").innerHTML = list.map(cardHTML).join("");
+      }
+      function renderSkeleton() {
+        $("grid").innerHTML = Array(6)
+          .fill('<div class="sk"><i></i><i></i><i></i></div>')
+          .join("");
       }
 
-      /* ─────────── رسائل التنبيه والتحميل ─────────── */
-      function showBanner(type, msg) {
-        const wrap = document.getElementById("banners");
+      /* ═══ نافذة تفاصيل المنتج ═══ */
+      function openModal(p) {
+        $("sheet").innerHTML =
+          '<div class="m-img">' +
+          phHTML(p) +
+          imgHTML(p) +
+          '<button class="m-x" type="button" aria-label="إغلاق">×</button></div><div class="m-body">' +
+          (p.cat ? '<span class="m-cat">' + esc(p.cat) + "</span>" : "") +
+          "<h2>" +
+          esc(p.name) +
+          "</h2>" +
+          priceHTML(p, "m-price") +
+          (p.desc ? '<p class="m-desc">' + esc(p.desc) + "</p>" : "") +
+          orderBtn(p, "m-order") +
+          "</div>";
+        $("modal").classList.add("open");
+        $("modal").setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+      }
+      function closeModal() {
+        $("modal").classList.remove("open");
+        $("modal").setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+      }
+
+      /* ═══ التنبيهات ═══ */
+      function banner(type, msg) {
         const b = document.createElement("div");
-        b.className = "banner banner-" + type;
+        b.className = "banner b-" + type;
         b.textContent = msg;
         const x = document.createElement("button");
-        x.className = "banner-x";
         x.type = "button";
-        x.setAttribute("aria-label", "إغلاق");
         x.textContent = "×";
-        x.onclick = function () {
-          b.remove();
-        };
+        x.setAttribute("aria-label", "إغلاق");
+        x.onclick = () => b.remove();
         b.appendChild(x);
-        wrap.appendChild(b);
-      }
-      function showStatus(t) {
-        document.getElementById("statusText").textContent = t;
-        document.getElementById("status").classList.remove("hidden");
-      }
-      function hideStatus() {
-        document.getElementById("status").classList.add("hidden");
+        $("banners").appendChild(b);
       }
 
-      /* ─────────── التشغيل ─────────── */
+      /* ═══ التشغيل ═══ */
       function finalize() {
-        const raw = SETTINGS.whatsapp || CONFIG.WHATSAPP_NUMBER;
-        const cleaned = sanitizeNumber(raw);
-        WA_NUMBER = isValidWa(cleaned) ? cleaned : "";
+        PRODUCTS.forEach((p, i) => (p._i = i));
+        const cleaned = sanitizeNumber(
+          SETTINGS.whatsapp || CONFIG.WHATSAPP_NUMBER,
+        );
+        WA = isValidWa(cleaned) ? cleaned : "";
         renderIdentity();
         renderChips();
         renderGrid();
-        const fab = document.getElementById("fab");
-        if (WA_NUMBER) {
-          fab.href = waLink("مرحباً، عندي استفسار عن المنتجات");
-          fab.classList.remove("disabled");
+        const fab = $("fab"),
+          cta = $("heroCta");
+        if (WA) {
+          fab.href = cta.href = waLink("مرحباً، عندي استفسار عن المنتجات");
+          fab.classList.remove("off");
         } else {
-          fab.href = "#";
-          fab.classList.add("disabled");
-          showBanner(
+          fab.classList.add("off");
+          cta.classList.add("hidden");
+          banner(
             "warn",
-            'رقم الواتساب لسه مش متظبط — حط رقم محلك في تبويب "إعدادات" في الجدول (مثال: 201012345678) وبعدين اعمل Refresh للموقع.',
+            'رقم الواتساب لسه مش متظبط — حط رقم محلك في تبويب "إعدادات" في الجدول (مثال: 201012345678) وبعدين اعمل Refresh.',
           );
         }
       }
@@ -1183,140 +1349,98 @@
       async function init() {
         renderIdentity();
         const id = extractSheetId(CONFIG.SHEET_ID);
-
-        /* مفيش جدول مربوط → وضع تجريبي */
         if (!id) {
-          PRODUCTS = CONFIG.DEMO_PRODUCTS.filter(function (p) {
-            return p && p.name;
-          });
-          showBanner(
+          PRODUCTS = CONFIG.DEMO_PRODUCTS.slice();
+          banner(
             "demo",
-            'ده عرض تجريبي بمنتجات وهمية. أول ما تربط جدول Google Sheets بتاعك هيظهر منتجاتك الحقيقية — الخطوات كاملة في ملف "خطوات-التشغيل.txt".',
+            "ده عرض تجريبي بمنتجات وهمية. اربط جدول Google Sheets علشان تظهر منتجاتك الحقيقية.",
           );
-          finalize();
-          return;
+          return finalize();
         }
-
-        showStatus("جاري تحميل المنتجات...");
-        let productsTable = null;
-        let usedFallbackTab = false;
+        renderSkeleton();
+        let table = null,
+          fallback = false;
         try {
-          productsTable = await fetchGviz(id, CONFIG.TAB_PRODUCTS);
+          table = await fetchGviz(id, CONFIG.TAB_PRODUCTS);
         } catch (e) {
-          /* مش لقينا تبويب "منتجات"؟ بنجرب أول تبويب في الجدول */
           try {
-            productsTable = await fetchGviz(id, "");
-            usedFallbackTab = true;
+            table = await fetchGviz(id, "");
+            fallback = true;
           } catch (e2) {
-            productsTable = null;
+            table = null;
           }
         }
-        hideStatus();
 
-        if (productsTable) {
-          const mapped = mapProducts(productsTable);
-          if (mapped.error) {
-            showBanner("error", mapped.error);
+        if (table) {
+          const m = mapProducts(table);
+          if (m.error) {
+            banner("error", m.error);
             PRODUCTS = CONFIG.DEMO_PRODUCTS.slice();
           } else {
-            PRODUCTS = mapped.products;
-            if (usedFallbackTab && PRODUCTS.length) {
-              showBanner(
+            PRODUCTS = m.products;
+            if (fallback && PRODUCTS.length)
+              banner(
                 "warn",
-                'بنقرأ المنتجات من أول تبويب في الجدول لأننا ملقيناش تبويب اسمه "منتجات" — كل حاجة شغالة، بس لو حابب تنظيم أنضف سمّي التبويب "منتجات" واعمل Refresh.',
+                'بنقرأ المنتجات من أول تبويب لأننا ملقيناش تبويب اسمه "منتجات". سمّي التبويب "منتجات" لتنظيم أفضل.',
               );
-            }
-            if (!PRODUCTS.length) {
-              showBanner(
+            if (!PRODUCTS.length)
+              banner(
                 "warn",
-                'الجدول متوصّل، بس مفيش منتجات لسه — ضيف صفوف في تبويب "منتجات" (كل صف منتج).',
+                'الجدول متوصّل، بس مفيش منتجات لسه — ضيف صفوف في تبويب "منتجات".',
               );
-            }
           }
         } else {
-          showBanner(
+          banner(
             "error",
-            'تعذّر الوصول لتبويب "منتجات". اتأكد من ٣ حاجات: (١) الجدول مشارك بـ "أي حد عنده الرابط — مُشاهد" من زر Share، (٢) اسم التبويب مكتوب "منتجات" كده بالظبط، (٣) رابط الجدول اللي في إعدادات الموقع صح.',
+            'تعذّر الوصول لتبويب "منتجات". اتأكد من: (١) الجدول مشارك بـ "أي حد عنده الرابط — مُشاهد"، (٢) اسم التبويب "منتجات"، (٣) رابط الجدول صح.',
           );
           PRODUCTS = CONFIG.DEMO_PRODUCTS.slice();
         }
-
         try {
           SETTINGS = mapSettings(await fetchGviz(id, CONFIG.TAB_SETTINGS));
-        } catch (e) {
-          /* مفيش تبويب "إعدادات" أو فيه مشكلة — بنستخدم قيم ملف الموقع */
-        }
-
+        } catch (e) {}
         finalize();
       }
 
-      /* ─────────── الأحداث ─────────── */
-      document.getElementById("chips").addEventListener("click", function (e) {
-        const chip = e.target.closest(".chip");
-        if (!chip) return;
-        activeCat = chip.dataset.cat;
-        document.querySelectorAll(".chip").forEach(function (c) {
-          c.classList.toggle("active", c === chip);
-        });
+      /* ═══ الأحداث ═══ */
+      $("chips").addEventListener("click", (e) => {
+        const c = e.target.closest(".chip");
+        if (!c) return;
+        activeCat = c.dataset.cat;
+        document
+          .querySelectorAll(".chip")
+          .forEach((x) => x.classList.toggle("on", x === c));
         renderGrid();
       });
-
-      const searchInput = document.getElementById("searchInput");
-      let debounceTimer;
-      searchInput.addEventListener("input", function () {
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(function () {
-          query = searchInput.value;
+      let t;
+      $("q").addEventListener("input", (e) => {
+        clearTimeout(t);
+        t = setTimeout(() => {
+          query = e.target.value;
           renderGrid();
         }, 140);
       });
-
-      document
-        .getElementById("resetFilters")
-        .addEventListener("click", function () {
-          searchInput.value = "";
-          query = "";
-          activeCat = "الكل";
-          document.querySelectorAll(".chip").forEach(function (c, i) {
-            c.classList.toggle("active", i === 0);
-          });
-          renderGrid();
-        });
-
-      document.getElementById("grid").addEventListener("click", function (e) {
-        const b = e.target.closest(".order-btn.disabled:not([disabled])");
-        if (b) {
-          alert(
-            "زرار الطلب هيسهل لما يتظبط رقم الواتساب — شوف ملف خطوات التشغيل.",
-          );
-        }
+      $("reset").addEventListener("click", () => {
+        $("q").value = "";
+        query = "";
+        activeCat = "الكل";
+        renderChips();
+        renderGrid();
       });
-
-      document.getElementById("fab").addEventListener("click", function (e) {
-        if (!WA_NUMBER) {
-          e.preventDefault();
-          alert(
-            'لازم تحط رقم الواتساب الأول: في الجدول، افتح تبويب "إعدادات" واكتب رقمك في صف "رقم الواتساب" بالصيغة 201012345678.',
-          );
-        }
+      $("grid").addEventListener("click", (e) => {
+        if (e.target.closest(".order-btn")) return;
+        const c = e.target.closest(".card");
+        if (c) openModal(PRODUCTS[+c.dataset.i]);
       });
-
-      /* أدوات للاختبار — مش بتأثر على تشغيل الموقع */
-      window.__shopTest = {
-        sanitizeNumber: sanitizeNumber,
-        extractSheetId: extractSheetId,
-        parseGviz: parseGviz,
-        isValidWa: isValidWa,
-        mapProducts: mapProducts,
-        mapSettings: mapSettings,
-        normDigits: normDigits,
-        get waNumber() {
-          return WA_NUMBER;
-        },
-        get products() {
-          return PRODUCTS;
-        },
-      };
+      $("modal").addEventListener("click", (e) => {
+        if (e.target === $("modal") || e.target.closest(".m-x")) closeModal();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeModal();
+      });
+      $("fab").addEventListener("click", (e) => {
+        if (!WA) e.preventDefault();
+      });
 
       init();
     </script>
